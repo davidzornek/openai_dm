@@ -1,0 +1,2 @@
+- `docker build -t openai .`
+- `docker run -v <path to local repo>:/src/openai/ -it --name openai_dev openai bash`
