@@ -7,7 +7,14 @@ import openai
 from .constants import COST_PER_1000_TOKENS
 
 load_dotenv()
-openai.api_key = os.environ["OPENAI_API_KEY"]
+if not os.environ.get("OPENAI_API_KEY"):
+    raise ValueError(
+        (
+            "No API key found. Obtain one at https://platform.openai.com/account/api-keys "
+            "and place it in your dotenv file."
+        )
+else:
+    openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 class RaceSelection:
@@ -68,6 +75,19 @@ class RaceSelection:
         
         return assistant_content
 
+    def show_costs(self):
+        return {
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "total_tokens": self.prompt_tokens + self.completion_tokens,
+            "prompt_cost": self.prompt_cost,
+            "completion_cost": self.completion_cost,
+            "total_cost": (
+                self.token_prices["input"] * self.prompt_tokens + 
+                self.token_prices["output"] * self.completion_tokens
+            ) // 1000
+        }
+
 
 # class CharacterCreator:
 #     def __init__(self, max_tokens, gpt4=False):
@@ -122,15 +142,15 @@ class RaceSelection:
         
 #         return response["choices"][0]["message"]["content"]
         
-#     def show_costs(self):
-#         return {
-#             "prompt_tokens": self.prompt_tokens,
-#             "completion_tokens": self.completion_tokens,
-#             "total_tokens": self.prompt_tokens + self.completion_tokens,
-#             "prompt_cost": self.prompt_cost,
-#             "completion_cost": self.completion_cost,
-#             "total_cost": (
-#                 self.token_prices["input"] * self.prompt_tokens + 
-#                 self.token_prices["output"] * self.completion_tokens
-#             ) // 1000
-#         }
+    # def show_costs(self):
+    #     return {
+    #         "prompt_tokens": self.prompt_tokens,
+    #         "completion_tokens": self.completion_tokens,
+    #         "total_tokens": self.prompt_tokens + self.completion_tokens,
+    #         "prompt_cost": self.prompt_cost,
+    #         "completion_cost": self.completion_cost,
+    #         "total_cost": (
+    #             self.token_prices["input"] * self.prompt_tokens + 
+    #             self.token_prices["output"] * self.completion_tokens
+    #         ) // 1000
+    #     }

@@ -4,12 +4,6 @@ pytorch-lightning==1.9.5
 jupyter==1.0.0
 black==22.1.0
 flake8==3.7.9
-fastapi==0.103.0
-uvicorn==0.22.0
-pandas==2.0.3
-lorem-text==2.1
-datasets==2.14.4
 openai==0.27.0
-azure-identity
 python-dotenv==1.0.0
 pyopenssl==23.2.0

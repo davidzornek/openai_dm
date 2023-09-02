@@ -2,6 +2,7 @@
 
 .ipynb_checkpoints/
 *.ipynb
+!Example.ipynb
 __pychache__/
 *.pyc
 

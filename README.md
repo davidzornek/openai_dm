@@ -1,2 +1,3 @@
-- `docker build -t openai .`
-- `docker run -v <path to local repo>:/src/openai/ -it --name openai_dev openai bash`
+- `docker build -t dm .`
+- `docker run -v <path to local repo>:/src/openai_dm/ -p 8888:8888 -it --name openai_dev openai_dm bash`
+- `jupyter notebook --allow-root --ip=0.0.0.0 --port=8888`
