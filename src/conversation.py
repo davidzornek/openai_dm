@@ -11,8 +11,12 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 class CharacterCreator:
-    def __init__(self, max_tokens):
-        self.engine = "gpt-3.5-turbo"
+    def __init__(self, max_tokens, gpt4=False):
+        if gpt4:
+            self.engine="gpt-4"
+        else:
+            self.engine = "gpt-3.5-turbo"
+        
         self.max_tokens = max_tokens
         # self.tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
         

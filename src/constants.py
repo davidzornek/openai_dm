@@ -7,4 +7,8 @@ COST_PER_1000_TOKENS = {
         "input": 0.0015,
         "output": 0.002,
     },
+    "gpt-4": {
+        "input": 0.03,
+        "output": 0.06,
+    },
 }
