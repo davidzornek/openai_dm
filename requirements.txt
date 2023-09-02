@@ -9,4 +9,7 @@ uvicorn==0.22.0
 pandas==2.0.3
 lorem-text==2.1
 datasets==2.14.4
-openai==0.28.0
+openai==0.27.0
+azure-identity
+python-dotenv==1.0.0
+pyopenssl==23.2.0

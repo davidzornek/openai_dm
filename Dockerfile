@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 
 WORKDIR /src
 
@@ -11,6 +11,6 @@ RUN apt-get install -y vim
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-RUN source/openai/commands.sh
+# CMD source openai/commands.sh
 
 CMD ["bash"]
