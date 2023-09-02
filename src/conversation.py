@@ -67,7 +67,7 @@ class RaceSelection:
             {"role": "user", "content": user_input},
             {"role": "system", "content": (
                 "If the user has chosen a race, ask whether they're sure of their choice. "
-                "If they are sure, say 'Race chosen.' If they aren't, say 'Race choice reset.'"
+                "If they are sure, state which race was chosen in the format 'Selected: <the race that was selected>' If they aren't, say 'Race choice reset.'"
             )}
         ])
         response = openai.ChatCompletion.create(
@@ -84,7 +84,14 @@ class RaceSelection:
         self.completion_tokens += response["usage"]["completion_tokens"]
         self.completion_cost = self.token_prices["output"] * (self.completion_tokens // 1000)
         
+        if assistant_content.startswith("Selected: "):
+            self._update_race(assistant_content.split(" ")[1])
+
         return assistant_content
+
+    def _update_race(self, race):
+        """Updates racial choice"""
+        self.character_sheet.race = race
 
     def show_costs(self) -> dict:
         return {
