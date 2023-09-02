@@ -11,4 +11,6 @@ RUN apt-get install -y vim
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["python", "api.py"]
+RUN source/openai/commands.sh
+
+CMD ["bash"]
