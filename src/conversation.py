@@ -86,6 +86,22 @@ class RaceSelection:
         
         if assistant_content.startswith("Selected: "):
             self._update_race(assistant_content.split(" ")[1])
+        if assistant_content == "Race choice reset.":
+            self._update_race(None)
+            self.context = [
+                {"role": "system", "content": (
+                        "You are a D&D 5e DM. Guide the player through choosing a race."
+                        "Be as brief as possible with each turn in the conversation, providing "
+                        "minimal, but complete information, unless the player asks for more info. "
+                )}
+            ]
+            response = openai.ChatCompletion.create(
+                model=self.engine,
+                temperature=0,
+                max_tokens=self.max_tokens,
+                messages=self.context
+            )
+            return response["choices"][0]["message"]["content"]
 
         return assistant_content
 
