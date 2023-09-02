@@ -13,6 +13,7 @@ if not os.environ.get("OPENAI_API_KEY"):
             "No API key found. Obtain one at https://platform.openai.com/account/api-keys "
             "and place it in your dotenv file."
         )
+    )
 else:
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
