@@ -1,10 +1,12 @@
 import json
 import os
+from typing import Optional
 
 from dotenv import load_dotenv
 import openai
 
 from .constants import COST_PER_1000_TOKENS
+from .character_sheet import CharacterSheet
 
 load_dotenv()
 if not os.environ.get("OPENAI_API_KEY"):
@@ -19,13 +21,21 @@ else:
 
 
 class RaceSelection:
-    def __init__(self, max_tokens, gpt4=False):
+    """Chatbot for race selection node of character creation.
+    
+    Params:
+        max_tokens (int): maximum token length of response
+        gpt4 (bool): whether to use gpt-4 vs gpt-3.5-turbo
+        charactersheet (CharacterSheet): Optional CharacterSheet object to use as a starting point.
+    """
+    def __init__(self, max_tokens: int, gpt4: bool = False, character_sheet: Optional[CharacterSheet] = CharacterSheet()):
         if gpt4:
             self.engine="gpt-4"
         else:
             self.engine = "gpt-3.5-turbo"
         
         self.max_tokens = max_tokens
+        self.character_sheet = character_sheet
         # self.tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
         self.context = [
             {"role": "system", "content": (
@@ -52,7 +62,7 @@ class RaceSelection:
         print(response["choices"][0]["message"]["content"])
 
 
-    def send_message(self, user_input):
+    def send_message(self, user_input: str) -> str:
         self.context.extend([
             {"role": "user", "content": user_input},
             {"role": "system", "content": (
@@ -76,7 +86,7 @@ class RaceSelection:
         
         return assistant_content
 
-    def show_costs(self):
+    def show_costs(self) -> dict:
         return {
             "prompt_tokens": self.prompt_tokens,
             "completion_tokens": self.completion_tokens,
