@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import openai
 
-from constants import COST_PER_1000_TOKENS
+from .constants import COST_PER_1000_TOKENS
 
 load_dotenv()
 openai.api_key = os.environ["OPENAI_API_KEY"]
@@ -32,8 +32,8 @@ class CharacterCreator:
         self.completion_tokens = 0        
         self.prompt_cost = 0
         self.completion_cost = 0
-        
-        print(response)
+        print(response["choices"][0]["message"]["content"])
+        #print(response["message"]["content"])
         
     def send_message(self, user_input):
         response = openai.ChatCompletion.create(
@@ -50,7 +50,7 @@ class CharacterCreator:
         self.completion_tokens += response["usage"]["completion_tokens"]
         self.completion_cost = self.token_prices["output"] * (self.completion_tokens // 1000)
         
-        return response
+        return response["choices"][0]["message"]["content"]
         
     def show_costs(self):
         return {
