@@ -22,7 +22,7 @@ jobs:
       - run:
           name: "Lint code"
           command:
-              flake8 ~/src/;
+              flake8 src/;
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
