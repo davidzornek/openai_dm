@@ -7,3 +7,4 @@ flake8==3.7.9
 openai==0.27.0
 python-dotenv==1.0.0
 pyopenssl==23.2.0
+pre-commit==3.4.0
