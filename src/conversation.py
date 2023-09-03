@@ -20,20 +20,15 @@ else:
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
-class RaceSelection:
-    """Chatbot for race selection node of character creation.
-
-    Params:
-        max_tokens (int): maximum token length of response
-        gpt4 (bool): whether to use gpt-4 vs gpt-3.5-turbo
-        charactersheet (CharacterSheet): Optional CharacterSheet object to use as a starting point.
-    """
+class ConversationNode:
+    """Base class for conversation nodes."""
 
     def __init__(
         self,
         max_tokens: int,
         gpt4: bool = False,
         character_sheet: Optional[Character] = Character(),
+        system_initialization: str = "You are a D&D 5e DEM.",
     ):
         if gpt4:
             self.engine = "gpt-4"
@@ -46,14 +41,15 @@ class RaceSelection:
         self.context = [
             {
                 "role": "system",
-                "content": (
-                    "You are a D&D 5e DM. Guide the player through choosing a race."
-                    "Be as brief as possible with each turn in the conversation, "
-                    "providing minimal, but complete information, unless the player "
-                    "asks for more info. "
-                ),
+                "content": system_initialization,
             }
         ]
+
+        self.token_prices = COST_PER_1000_TOKENS[self.engine]
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.prompt_cost = 0
+        self.completion_cost = 0
 
         response = openai.ChatCompletion.create(
             model=self.engine,
@@ -61,15 +57,80 @@ class RaceSelection:
             max_tokens=self.max_tokens,
             messages=self.context,
         )
-
-        # Add info from setup query
-        self.token_prices = COST_PER_1000_TOKENS[self.engine]
-        self.prompt_tokens = 0
-        self.completion_tokens = 0
-        self.prompt_cost = 0
-        self.completion_cost = 0
+        self._update_costs(response)
 
         print(response["choices"][0]["message"]["content"])
+
+    def send_message(self, user_input: str) -> str:
+        """Sends a message to the chatbot and receives a response.
+
+        Params:
+        user_input (str): Message to send.
+
+        Returns:
+        str: chatbot response
+        """
+        self.context.append(
+            {"role": "user", "content": user_input},
+        )
+        response = openai.ChatCompletion.create(
+            model=self.engine,
+            temperature=0,
+            # top_p=1, ## default value
+            # n=1, ## default value for number of response choices
+            max_tokens=self.max_tokens,
+            messages=self.context,
+        )
+        self._update_costs(response)
+
+        assistant_content = response["choices"][0]["message"]["content"]
+        self.context.append({"role": "assistant", "content": assistant_content})
+
+        return assistant_content
+
+    def _update_costs(self, response: dict):
+        self.prompt_tokens += response["usage"]["prompt_tokens"]
+        self.prompt_cost = self.token_prices["input"] * (self.prompt_tokens // 1000)
+        self.completion_tokens += response["usage"]["completion_tokens"]
+        self.completion_cost = self.token_prices["output"] * (
+            self.completion_tokens // 1000
+        )
+
+    def show_costs(self) -> dict:
+        return {
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "total_tokens": self.prompt_tokens + self.completion_tokens,
+            "prompt_cost": self.prompt_cost,
+            "completion_cost": self.completion_cost,
+            "total_cost": (
+                self.token_prices["input"] * self.prompt_tokens
+                + self.token_prices["output"] * self.completion_tokens
+            )
+            // 1000,
+        }
+
+
+class RaceSelection(ConversationNode):
+    """Chatbot for race selection node of character creation.
+
+    Params:
+        max_tokens (int): maximum token length of response
+        gpt4 (bool): whether to use gpt-4 vs gpt-3.5-turbo
+        charactersheet (CharacterSheet): Optional CharacterSheet object to use as a starting point.
+    """
+
+    def __init__(self, max_tokens: int, gpt4: bool = False):
+        super().__init__(
+            max_tokens=max_tokens,
+            gpt4=gpt4,
+            system_initialization=(
+                "You are a D&D 5e DM. Guide the player through choosing a race."
+                "Be as brief as possible with each turn in the conversation, "
+                "providing minimal, but complete information, unless the player "
+                "asks for more info. "
+            ),
+        )
 
     def send_message(self, user_input):
         self.context.extend(
@@ -93,18 +154,13 @@ class RaceSelection:
             max_tokens=self.max_tokens,
             messages=self.context,
         )
+        self._update_costs(response)
         assistant_content = response["choices"][0]["message"]["content"]
-        self.context.append({"role": "user", "content": user_input})
-
-        self.prompt_tokens += response["usage"]["prompt_tokens"]
-        self.prompt_cost = self.token_prices["input"] * (self.prompt_tokens // 1000)
-        self.completion_tokens += response["usage"]["completion_tokens"]
-        self.completion_cost = self.token_prices["output"] * (
-            self.completion_tokens // 1000
-        )
+        self.context.append({"role": "assistant", "content": assistant_content})
 
         if assistant_content.startswith("Selected: "):
             self._update_race(assistant_content.split(" ")[1])
+
         if assistant_content == "Race choice reset.":
             self._update_race(None)
             self.context = [
@@ -130,17 +186,3 @@ class RaceSelection:
     def _update_race(self, race):
         """Updates racial choice"""
         self.character_sheet.race = race
-
-    def show_costs(self) -> dict:
-        return {
-            "prompt_tokens": self.prompt_tokens,
-            "completion_tokens": self.completion_tokens,
-            "total_tokens": self.prompt_tokens + self.completion_tokens,
-            "prompt_cost": self.prompt_cost,
-            "completion_cost": self.completion_cost,
-            "total_cost": (
-                self.token_prices["input"] * self.prompt_tokens
-                + self.token_prices["output"] * self.completion_tokens
-            )
-            // 1000,
-        }
