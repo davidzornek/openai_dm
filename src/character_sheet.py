@@ -48,6 +48,6 @@ class Character:
         "stealth": False,
         "survival": False,
     }
-    AC: int = (12,)
-    speed: int = (30,)
+    AC: int = 12
+    speed: int = 30
     hit_point_max: int = 27
