@@ -33,7 +33,7 @@ class RaceSelection:
         self,
         max_tokens: int,
         gpt4: bool = False,
-        character_sheet: Optional[CharacterSheet] = Character(),
+        character_sheet: Optional[Character] = Character(),
     ):
         if gpt4:
             self.engine = "gpt-4"
