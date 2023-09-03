@@ -19,7 +19,10 @@ jobs:
           command:
               pip install --upgrade pip;
               pip install -r requirements.txt;
-              flake8 ~/src/
+      - run:
+          name: "Lint code"
+          command:
+              flake8 ~/src/;
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
