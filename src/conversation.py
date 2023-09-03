@@ -72,6 +72,8 @@ class RaceSelection:
         response = openai.ChatCompletion.create(
             model=self.engine,
             temperature=0,
+            # top_p=1, ## default value
+            # n=1, ## default value for number of response choices
             max_tokens=self.max_tokens,
             messages=self.context,
         )
