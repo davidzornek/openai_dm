@@ -140,8 +140,8 @@ class RaceSelection(ConversationNode):
                     "role": "system",
                     "content": (
                         "If the user has chosen a race, ask whether they're sure of "
-                        "their choice. If they are sure, say 'Race chosen.' If they "
-                        "aren't, say 'Race choice reset.'"
+                        "their choice. If they are sure reply in the format 'Selected: "
+                        " <race the player chose>'. If they aren't, say 'reset'."
                     ),
                 },
             ]
@@ -161,7 +161,7 @@ class RaceSelection(ConversationNode):
         if assistant_content.startswith("Selected: "):
             self._update_race(assistant_content.split(" ")[1])
 
-        if assistant_content == "Race choice reset.":
+        if assistant_content == "reset":
             self._update_race(None)
             self.context = [
                 {
