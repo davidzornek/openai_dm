@@ -11,7 +11,7 @@ class Character:
     race: str = "human"
     alignment: str = "Neutral"
     background: str = "Folk Hero"
-    proficiency_bonus: str = 1
+    proficiency_bonus: int = 2
     ability_scores: dict = {
         "strength": 8,
         "dexterity": 14,

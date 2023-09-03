@@ -1,9 +1,11 @@
 import os
+from typing import Optional
 
 from dotenv import load_dotenv
 import openai
 
 from .constants import COST_PER_1000_TOKENS
+from .character_sheet import Character
 
 load_dotenv()
 if not os.environ.get("OPENAI_API_KEY"):
@@ -19,13 +21,27 @@ else:
 
 
 class RaceSelection:
-    def __init__(self, max_tokens, gpt4=False):
+    """Chatbot for race selection node of character creation.
+
+    Params:
+        max_tokens (int): maximum token length of response
+        gpt4 (bool): whether to use gpt-4 vs gpt-3.5-turbo
+        charactersheet (CharacterSheet): Optional CharacterSheet object to use as a starting point.
+    """
+
+    def __init__(
+        self,
+        max_tokens: int,
+        gpt4: bool = False,
+        character_sheet: Optional[Character] = Character(),
+    ):
         if gpt4:
             self.engine = "gpt-4"
         else:
             self.engine = "gpt-3.5-turbo"
 
         self.max_tokens = max_tokens
+        self.character_sheet = character_sheet
         # self.tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
         self.context = [
             {
@@ -87,9 +103,35 @@ class RaceSelection:
             self.completion_tokens // 1000
         )
 
+        if assistant_content.startswith("Selected: "):
+            self._update_race(assistant_content.split(" ")[1])
+        if assistant_content == "Race choice reset.":
+            self._update_race(None)
+            self.context = [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a D&D 5e DM. Guide the player through choosing a race."
+                        "Be as brief as possible with each turn in the conversation, providing "
+                        "minimal, but complete information, unless the player asks for more info. "
+                    ),
+                }
+            ]
+            response = openai.ChatCompletion.create(
+                model=self.engine,
+                temperature=0,
+                max_tokens=self.max_tokens,
+                messages=self.context,
+            )
+            return response["choices"][0]["message"]["content"]
+
         return assistant_content
 
-    def show_costs(self):
+    def _update_race(self, race):
+        """Updates racial choice"""
+        self.character_sheet.race = race
+
+    def show_costs(self) -> dict:
         return {
             "prompt_tokens": self.prompt_tokens,
             "completion_tokens": self.completion_tokens,
