@@ -1,0 +1,24 @@
+version: 2.1
+
+# Define the jobs we want to run for this project
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.9
+    working_directory: ~/src
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command:
+              pip install -r requirements.txt
+              flake8 ~/src/
+
+
+ 
+
+# Orchestrate our job run sequence
+workflows:
+  build_and_test:
+    jobs:
+      - build
