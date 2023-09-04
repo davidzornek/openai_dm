@@ -47,7 +47,7 @@ class SkillProficiences:
 @dataclass
 class Character:
     name: str = "John Doe"
-    char_class: str = "Fighter"
+    class_name: str = "Fighter"
     subclasse: Optional[str] = None
     level: int = 1
     race: str = "human"
