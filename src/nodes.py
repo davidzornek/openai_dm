@@ -214,8 +214,8 @@ class ClassSelection(ConversationNode):
             gpt4=gpt4,
             system_initialization=(
                 "You are a D&D 5e DM. Guide the player through choosing a class."
-                "Be as brief as possible, providing minimal, but complete information, unless the user "
-                "asks for more info. "
+                "Be as brief as possible, providing minimal, but complete information, "
+                "unless the user asks for more info. "
             ),
         )
 
