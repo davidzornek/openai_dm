@@ -30,6 +30,16 @@ class ConversationNode:
         character_sheet: Optional[Character] = Character(),
         system_initialization: str = "You are a D&D 5e DEM.",
     ):
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise ValueError(
+                (
+                    "No API key found. Obtain one at "
+                    "https://platform.openai.com/account/api-keys "
+                    "and place it in your dotenv file."
+                )
+            )
+        else:
+            openai.api_key = os.environ["OPENAI_API_KEY"]
         if gpt4:
             self.engine = "gpt-4"
         else:
