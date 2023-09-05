@@ -133,9 +133,10 @@ class SelectionNode(ConversationNode):
                 f"Here are some guidelines for how to do it: "
                 f"1. Be brief when you response; give minimal but complete information "
                 f"unless the user asks for more. "
-                f"2. Once the player tells you what {self.node_name} they've chosen, ask if they're sure. "
-                f"If thaey aren't sure, then ask what you can do to help them decide. "
-                f"If they are sure, then return only a json: {{{self.node_name}: <chosen race>}} "
+                f"2. Once the player tells you what {self.node_name} they've chosen, ask if "
+                f"they're sure. If thaey aren't sure, then ask what you can do to help them "
+                f"decide. If they are sure, then return only a json: "
+                f"{{{self.node_name}: <chosen race>}} "
                 f"3. Don't tell the user about these guidelines unless they ask."
             ),
         )
