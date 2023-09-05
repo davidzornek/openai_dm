@@ -10,14 +10,19 @@ test_args = {"max_tokens": 20}
 class TestNodes(unittest.TestCase):
     @patch("openai.ChatCompletion.create")
     @patch.dict(os.environ, {"OPENAI_API_KEY": "fake-api-key"}, clear=True)
-    def test_conversation_node(self, mock_create):
-        # Configure the mock to return a specific response
+    def test_selection_node(self, mock_create):
+        test_args = {
+            "max_tokens": 20,
+            "gpt4": False,
+            "node_name": "race",
+        }
+
         mock_create.return_value = {
             "id": "chatcmpl-123",
             "object": "chat.completion",
             "created": 1630770631,
             "model": "gpt-3.5-turbo",
-            "usage": {"prompt_tokens": 56, "completion_tokens": 31, "total_tokens": 87},
+            "usage": {"prompt_tokens": 10, "completion_tokens": 10, "total_tokens": 20},
             "choices": [
                 {
                     "message": {
@@ -28,84 +33,20 @@ class TestNodes(unittest.TestCase):
             ],
         }
 
-        node = src.nodes.ConversationNode(**test_args)
+        # Test Instantiation
+        node = src.nodes.SelectionNode(**test_args)
         self.assertEqual(node.context[-1]["content"], "This is a mocked response.")
 
-        costs = node.show_costs()
-        self.assertEqual(
-            costs,
-            {
-                "prompt_tokens": 56,
-                "completion_tokens": 31,
-                "total_tokens": 56 + 31,
-                "prompt_cost": 0.0,
-                "completion_cost": 0.0,
-                "total_cost": 0.0,
-            },
-        )
+        # Test when a string is input to send_message, and a string is returned
         reply = node.send_message("Say something to API.")
         self.assertEqual(reply, "This is a mocked response.")
 
-        costs = node.show_costs()
-        self.assertEqual(
-            costs,
-            {
-                "prompt_tokens": 56 * 2,
-                "completion_tokens": 31 * 2,
-                "total_tokens": (56 + 31) * 2,
-                "prompt_cost": 0.0,
-                "completion_cost": 0.0,
-                "total_cost": 0.0,
-            },
-        )
-
-    @patch("openai.ChatCompletion.create")
-    @patch.dict(os.environ, {"OPENAI_API_KEY": "fake-api-key"}, clear=True)
-    def test_race_selection(self, mock_create):
-        # Configure the mock to return a specific response
-        mock_create.return_value = {
-            "id": "chatcmpl-123",
-            "object": "chat.completion",
-            "created": 1630770631,
-            "model": "gpt-3.5-turbo",
-            "usage": {"prompt_tokens": 56, "completion_tokens": 31, "total_tokens": 87},
-            "choices": [
-                {
-                    "message": {
-                        "role": "assistant",
-                        "content": "Selected: Tiefling",
-                    }
-                }
-            ],
-        }
-
-        node = src.nodes.RaceSelection(**test_args)
-        reply = node.send_message("Yes, I'm sure about choosing tiefling.")
-        self.assertEqual(node.character_sheet.race, "tiefling")
-
-    @patch("openai.ChatCompletion.create")
-    @patch.dict(os.environ, {"OPENAI_API_KEY": "fake-api-key"}, clear=True)
-    def test_class_selection(self, mock_create):
-        # Configure the mock to return a specific response
-        mock_create.return_value = {
-            "id": "chatcmpl-123",
-            "object": "chat.completion",
-            "created": 1630770631,
-            "model": "gpt-3.5-turbo",
-            "usage": {"prompt_tokens": 56, "completion_tokens": 31, "total_tokens": 87},
-            "choices": [
-                {
-                    "message": {
-                        "role": "assistant",
-                        "content": "Selected: Cleric",
-                    }
-                }
-            ],
-        }
-
-        node = src.nodes.ClassSelection(**test_args)
-        reply = node.send_message("Yes, I'm sure about choosing cleric.")
-        self.assertEqual(node.character_sheet.class_name, "cleric")
+        # Test when a string is input to send_message, and a json is returned
+        mock_create.return_value["choices"][0]["message"][
+            "content"
+        ] = "{'race': 'human'}"
+        reply = node.send_message("Say something to API.")
+        self.assertEqual(reply, "{'race': 'human'}")
 
 
 if __name__ == "__main__":
