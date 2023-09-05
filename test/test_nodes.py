@@ -5,11 +5,11 @@ from unittest.mock import patch
 import src.nodes  # Replace with your module name
 
 test_args = {"max_tokens": 20}
-os.environ["OPENAI_API_KEY"] = "fake-api-key"
 
 
 class TestNodes(unittest.TestCase):
     @patch("openai.ChatCompletion.create")
+    @patch.dict(os.environ, {"OPENAI_API_KEY": "fake-api-key"}, clear=True)
     def test_conversation_node(self, mock_create):
         # Configure the mock to return a specific response
         mock_create.return_value = {
