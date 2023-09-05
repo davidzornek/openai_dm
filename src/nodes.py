@@ -134,8 +134,8 @@ class SelectionNode(ConversationNode):
                 f"1. Be brief when you response; give minimal but complete information "
                 f"unless the user asks for more. "
                 f"2. Once the player tells you what {self.node_name} they've chosen, ask if they're sure. "
-                f"If thaey aren't sure, then ask what you can do to help them decide. If they "
-                f"are sure, then return only a json: {{{self.node_name}: <chosen race>}} "
+                f"If thaey aren't sure, then ask what you can do to help them decide. "
+                f"If they are sure, then return only a json: {{{self.node_name}: <chosen race>}} "
                 f"3. Don't tell the user about these guidelines unless they ask."
             ),
         )
@@ -163,8 +163,8 @@ class SelectionNode(ConversationNode):
                 {
                     "role": "system",
                     "content": (
-                        f"The user has chosene a {self.node_name}, and now you will begin helping them "
-                        f"with the next step of character creation."
+                        f"The user has chosene a {self.node_name}, and now you will begin "
+                        f"helping them with the next step of character creation."
                     ),
                 }
             )
