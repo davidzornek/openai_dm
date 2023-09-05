@@ -8,16 +8,6 @@ from .constants import COST_PER_1000_TOKENS
 from .character_sheet import Character
 
 load_dotenv()
-if not os.environ.get("OPENAI_API_KEY"):
-    raise ValueError(
-        (
-            "No API key found. Obtain one at "
-            "https://platform.openai.com/account/api-keys "
-            "and place it in your dotenv file."
-        )
-    )
-else:
-    openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 class ConversationNode:
@@ -30,6 +20,16 @@ class ConversationNode:
         character_sheet: Optional[Character] = Character(),
         system_initialization: str = "You are a D&D 5e DEM.",
     ):
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise ValueError(
+                (
+                    "No API key found. Obtain one at "
+                    "https://platform.openai.com/account/api-keys "
+                    "and place it in your dotenv file."
+                )
+            )
+        else:
+            openai.api_key = os.environ["OPENAI_API_KEY"]
         if gpt4:
             self.engine = "gpt-4"
         else:
@@ -57,9 +57,11 @@ class ConversationNode:
             max_tokens=self.max_tokens,
             messages=self.context,
         )
+        assistant_content = response["choices"][0]["message"]["content"]
+        self.context.append({"role": "assistant", "content": assistant_content})
         self._update_costs(response)
 
-        print(response["choices"][0]["message"]["content"])
+        print(assistant_content)
 
     def send_message(self, user_input: str) -> str:
         """Sends a message to the chatbot and receives a response.
@@ -124,7 +126,7 @@ class RaceSelection(ConversationNode):
         self,
         max_tokens: int,
         gpt4: bool = False,
-        character_sheet: Optional[Character] = None,
+        character_sheet: Character = Character(),
     ):
         super().__init__(
             max_tokens=max_tokens,
@@ -191,7 +193,7 @@ class RaceSelection(ConversationNode):
 
     def _update_race(self, race):
         """Updates racial choice"""
-        self.character_sheet.race = race
+        self.character_sheet.race = race.lower()
 
 
 class ClassSelection(ConversationNode):
@@ -207,7 +209,7 @@ class ClassSelection(ConversationNode):
         self,
         max_tokens: int,
         gpt4: bool = False,
-        character_sheet: Optional[Character] = None,
+        character_sheet: Character = Character(),
     ):
         super().__init__(
             max_tokens=max_tokens,
@@ -272,4 +274,4 @@ class ClassSelection(ConversationNode):
 
     def _update_class(self, class_name):
         """Updates racial choice"""
-        self.character_sheet.class_name = class_name
+        self.character_sheet.class_name = class_name.lower()

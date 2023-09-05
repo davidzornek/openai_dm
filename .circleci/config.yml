@@ -23,6 +23,10 @@ jobs:
           name: "Lint code"
           command:
               flake8 --max-line-length 99 src/;
+      - run:
+          name: "Execute Tests"
+          command:
+              python -m unittest
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
