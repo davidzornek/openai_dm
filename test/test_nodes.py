@@ -44,9 +44,10 @@ class TestNodes(unittest.TestCase):
         # Test when a string is input to send_message, and a json is returned
         mock_create.return_value["choices"][0]["message"][
             "content"
-        ] = "{'race': 'human'}"
+        ] = '{"race": "human"}'
         reply = node.send_message("Say something to API.")
-        self.assertEqual(reply, "{'race': 'human'}")
+        self.assertEqual(reply, '{"race": "human"}')
+        self.assertEqual(node.character_sheet.race, "human")
 
 
 if __name__ == "__main__":

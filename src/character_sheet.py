@@ -46,20 +46,20 @@ class SkillProficiences:
 
 @dataclass
 class Character:
-    name: str = "John Doe"
-    class_name: str = "Fighter"
+    name: Optional[str] = None
+    class_name: Optional[str] = None
     subclasse: Optional[str] = None
     level: int = 1
-    race: str = "human"
-    alignment: str = "Neutral"
-    background: str = "Folk Hero"
+    race: Optional[str] = None
+    alignment: Optional[str] = None
+    background: Optional[str] = None
     proficiency_bonus: int = 2
     ability_scores: AbilityScores = AbilityScores()
     saving_throw_proficiencies: SavingThrowProficiences = SavingThrowProficiences()
     skill_proficiencies: SkillProficiences = SkillProficiences()
-    AC: int = 12
+    AC: int = 10
     speed: int = 30
-    hit_point_max: int = 27
+    hit_point_max: int = 6
 
     def update(self, new_values: dict):
         for k, v in new_values.items():
