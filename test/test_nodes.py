@@ -27,12 +27,13 @@ class TestNodes(unittest.TestCase):
                 }
             ],
         }
+        self.assertEqual(os.environ["OPENAI_API_KEY"], "fake-api-key")
 
         # Call your function that uses openai.ChatCompletion.create
         node = src.nodes.ConversationNode(**test_args)
         print(node)
         # Assert that the result matches what you expect
-        self.assertEqual(node.context[-1]["content"], "This is a mocked response.")
+        self.assertEqual(node.context[-1]["content"], "You are a D&D 5e DEM.")
 
         costs = node.show_costs()
         self.assertEqual(
