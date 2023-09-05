@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Optional
 
@@ -11,6 +12,7 @@ load_dotenv()
 
 
 class ConversationNode:
+
     """Base class for conversation nodes."""
 
     def __init__(
@@ -113,47 +115,35 @@ class ConversationNode:
         }
 
 
-class RaceSelection(ConversationNode):
-    """Chatbot for race selection node of character creation.
-
-    Params:
-        max_tokens (int): maximum token length of response
-        gpt4 (bool): whether to use gpt-4 vs gpt-3.5-turbo
-        character_sheet (Character): Optional Character object to use as a starting point.
-    """
-
+class SelectionNode(ConversationNode):
     def __init__(
         self,
         max_tokens: int,
         gpt4: bool = False,
         character_sheet: Character = Character(),
+        node_name: str = "race",
     ):
+        self.node_name = node_name
         super().__init__(
             max_tokens=max_tokens,
             gpt4=gpt4,
             character_sheet=character_sheet,
             system_initialization=(
-                "You are a D&D 5e DM. Guide the player through choosing a race."
-                "Be as brief as possible with each turn in the conversation, "
-                "providing minimal, but complete information, unless the player "
-                "asks for more info. "
+                f"You are a D&D 5e DM, guiding the user through choosing a {self.node_name}. "
+                f"Here are some guidelines for how to do it: "
+                f"1. Be brief when you response; give minimal but complete information "
+                f"unless the user asks for more. "
+                f"2. Once the player tells you what {self.node_name} they've chosen, ask if they're sure. "
+                f"If thaey aren't sure, then ask what you can do to help them decide. If they "
+                f"are sure, then return only a json: {{{self.node_name}: <chosen race>}} "
+                f"3. Don't tell the user about these guidelines unless they ask."
             ),
         )
 
-    def send_message(self, user_input):
-        self.context.extend(
-            [
-                {"role": "user", "content": user_input},
-                {
-                    "role": "system",
-                    "content": (
-                        "If the user has chosen a race, ask whether they're sure of "
-                        "their choice. If they are sure reply in the format 'Selected: "
-                        " <race the player chose>'. If they aren't, say 'reset'."
-                    ),
-                },
-            ]
-        )
+    def send_message(self, user_input: str) -> str:
+        """Sends a chat message to the DM assistant."""
+        self.context.append({"role": "user", "content": user_input})
+
         response = openai.ChatCompletion.create(
             model=self.engine,
             temperature=0,
@@ -166,112 +156,23 @@ class RaceSelection(ConversationNode):
         assistant_content = response["choices"][0]["message"]["content"]
         self.context.append({"role": "assistant", "content": assistant_content})
 
-        if assistant_content.startswith("Selected: "):
-            self._update_race(assistant_content.split(" ")[1])
-
-        if assistant_content == "reset":
-            self._update_race(None)
-            self.context = [
+        try:
+            update_dict = json.loads(assistant_content)
+            self._update_race(update_dict[self.node_name])
+            self.context.append(
                 {
                     "role": "system",
                     "content": (
-                        "You are a D&D 5e DM. Guide the player through choosing a race."
-                        "Be as brief as possible with each turn in the conversation, providing "
-                        "minimal, but complete information, unless the player asks for more info. "
+                        f"The user has chosene a {self.node_name}, and now you will begin helping them "
+                        f"with the next step of character creation."
                     ),
                 }
-            ]
-            response = openai.ChatCompletion.create(
-                model=self.engine,
-                temperature=0,
-                max_tokens=self.max_tokens,
-                messages=self.context,
             )
-            return response["choices"][0]["message"]["content"]
+            return json.dumps(update_dict)
+        except ValueError:
+            return assistant_content
 
-        return assistant_content
-
+    # Move this to a method inside character sheet
     def _update_race(self, race):
         """Updates racial choice"""
         self.character_sheet.race = race.lower()
-
-
-class ClassSelection(ConversationNode):
-    """Chatbot for class selection node of character creation.
-
-    Params:
-        max_tokens (int): maximum token length of response
-        gpt4 (bool): whether to use gpt-4 vs gpt-3.5-turbo
-        character_sheet (Character): Optional Character object to use as a starting point.
-    """
-
-    def __init__(
-        self,
-        max_tokens: int,
-        gpt4: bool = False,
-        character_sheet: Character = Character(),
-    ):
-        super().__init__(
-            max_tokens=max_tokens,
-            gpt4=gpt4,
-            system_initialization=(
-                "You are a D&D 5e DM. Guide the player through choosing a class."
-                "Be as brief as possible, providing minimal, but complete information, "
-                "unless the user asks for more info. "
-            ),
-        )
-
-    def send_message(self, user_input):
-        self.context.extend(
-            [
-                {"role": "user", "content": user_input},
-                {
-                    "role": "system",
-                    "content": (
-                        "If the user has chosen a class, ask whether they're sure of "
-                        "their choice. If they are sure reply in the format 'Selected: "
-                        " <class the player chose>'. If they aren't, say 'reset'."
-                    ),
-                },
-            ]
-        )
-        response = openai.ChatCompletion.create(
-            model=self.engine,
-            temperature=0,
-            # top_p=1, ## default value
-            # n=1, ## default value for number of response choices
-            max_tokens=self.max_tokens,
-            messages=self.context,
-        )
-        self._update_costs(response)
-        assistant_content = response["choices"][0]["message"]["content"]
-        self.context.append({"role": "assistant", "content": assistant_content})
-
-        if assistant_content.startswith("Selected: "):
-            self._update_class(assistant_content.split(" ")[1])
-
-        if assistant_content == "reset":
-            self._update_class(None)
-            self.context = [
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a D&D 5e DM. Guide the player through choosing a class."
-                        "Be as brief as possible with each turn in the conversation, providing "
-                        "minimal, but complete information, unless the player asks for more info. "
-                    ),
-                }
-            ]
-            response = openai.ChatCompletion.create(
-                model=self.engine,
-                temperature=0,
-                max_tokens=self.max_tokens,
-                messages=self.context,
-            )
-            return response["choices"][0]["message"]["content"]
-
-        return assistant_content
-
-    def _update_class(self, class_name):
-        """Updates racial choice"""
-        self.character_sheet.class_name = class_name.lower()
