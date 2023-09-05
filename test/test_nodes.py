@@ -2,9 +2,7 @@ import os
 
 import unittest
 from unittest.mock import patch
-import src.nodes  # Replace with your module name
-
-test_args = {"max_tokens": 20}
+import src.nodes
 
 
 class TestNodes(unittest.TestCase):
