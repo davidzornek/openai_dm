@@ -60,3 +60,8 @@ class Character:
     AC: int = 12
     speed: int = 30
     hit_point_max: int = 27
+
+    def update(self, new_values: dict):
+        for k, v in new_values.items():
+            if hasattr(self, k):
+                setattr(self, k, v.lower())
