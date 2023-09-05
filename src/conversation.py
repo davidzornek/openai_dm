@@ -5,8 +5,8 @@ from .character_sheet import Character
 from .nodes import SelectionNode
 
 CONVERSATION_GRAPH = {
-    "race": ["class"],
-    "class": [],
+    "race": ["class_name"],
+    "class_name": [],
 }
 
 # NODE_MAP = {"race": RaceSelection, "class": ClassSelection}
@@ -32,7 +32,7 @@ class Conversation:
         self.costs = None
         self._update_costs()
 
-    def send_message(self, user_input):
+    def send_message(self, user_input: str) -> str:
         """Sends a message to the AI dm"""
         reply = self.current_node.send_message(user_input)
         try:
@@ -49,8 +49,8 @@ class Conversation:
                     self.character_sheet,
                     self.current_node_name,
                 )
-            else:
-                print("all done!")
+                print("all done")
+            return json.dumps(reply)
         except ValueError:
             return reply
 
