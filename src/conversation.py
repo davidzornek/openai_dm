@@ -5,8 +5,8 @@ from .character_sheet import Character
 from .nodes import SelectionNode
 
 CONVERSATION_GRAPH = {
-    "race": ["class"],
-    "class": [],
+    "race": ["class_name"],
+    "class_name": [],
 }
 
 # NODE_MAP = {"race": RaceSelection, "class": ClassSelection}

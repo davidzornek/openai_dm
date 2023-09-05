@@ -159,7 +159,8 @@ class SelectionNode(ConversationNode):
 
         try:
             update_dict = json.loads(assistant_content)
-            self._update_race(update_dict[self.node_name])
+
+            self.character_sheet.update(update_dict)
             self.context.append(
                 {
                     "role": "system",
@@ -172,8 +173,3 @@ class SelectionNode(ConversationNode):
             return json.dumps(update_dict)
         except ValueError:
             return assistant_content
-
-    # Move this to a method inside character sheet
-    def _update_race(self, race):
-        """Updates racial choice"""
-        self.character_sheet.race = race.lower()
