@@ -1,10 +1,7 @@
-#transformers==4.17.0
-torch==1.11.0
-pytorch-lightning==1.9.5
-jupyter==1.0.0
-black==22.1.0
-flake8==3.7.9
-openai==0.27.0
-python-dotenv==1.0.0
-pyopenssl==23.2.0
-pre-commit==3.4.0
+openai~=0.27.0
+jupyter
+black
+flake8
+python-dotenv
+pyopenssl
+pre-commit
