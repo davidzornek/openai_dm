@@ -2,7 +2,7 @@ import os
 
 import unittest
 from unittest.mock import patch
-import src.conversation
+from openai_dm import conversation
 
 
 class TestConversation(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestConversation(unittest.TestCase):
         }
 
         # Test Instantiation
-        conv = src.conversation.Conversation(**test_args)
+        conv = conversation.Conversation(**test_args)
         self.assertEqual(
             conv.current_node.context[-1]["content"], "This is a mocked response."
         )
