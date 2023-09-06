@@ -32,7 +32,7 @@ class TestNodes(unittest.TestCase):
         }
 
         # Test Instantiation
-        node = openai_dm.nodes.SelectionNode(**test_args)
+        node = nodes.SelectionNode(**test_args)
         self.assertEqual(node.context[-1]["content"], "This is a mocked response.")
 
         # Test when a string is input to send_message, and a string is returned
