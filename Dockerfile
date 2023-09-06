@@ -1,6 +1,6 @@
 FROM python:3.9
 
-WORKDIR /src
+WORKDIR /openai_dm
 
 RUN apt-get update
 RUN apt-get install -y vim
@@ -12,6 +12,4 @@ RUN pip install -r requirements.txt
 COPY .gitignore .
 COPY commands.sh .
 
-# CMD source openai/commands.sh
-
-CMD ["bash"]
+CMD ["jupyter", "--allow-root", "--no-browser", "--ip=0.0.0.0", "--port=8888"]
