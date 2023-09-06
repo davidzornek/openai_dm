@@ -22,7 +22,7 @@ jobs:
       - run:
           name: "Lint code"
           command:
-              flake8 --max-line-length 99 src/;
+              flake8 --max-line-length 99 openai_dm/;
       - run:
           name: "Execute Tests"
           command:
