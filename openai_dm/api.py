@@ -8,7 +8,7 @@ app = FastAPI()
 
 
 @app.post("/chat/")
-def predict(request: APIRequest):
+def predict(request):
     """
     Test with:
         curl -X POST http://127.0.0.1:5000/chat
