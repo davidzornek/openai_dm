@@ -1,14 +1,21 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 import uvicorn
 
-import openai
+from openai_dm.conversation import Conversation
 
 app = FastAPI()
 
 
+class APIRequest(BaseModel):
+    user_input: str
+    max_tokens: int
+    gpt4: bool
+
+
 @app.post("/chat/")
-def predict(request):
+def predict(request: APIRequest):
     """
     Test with:
         curl -X POST http://127.0.0.1:5000/chat
@@ -18,7 +25,7 @@ def predict(request):
     try:
         conv
     except NameError:
-        conv = openai.conversation.Conversation(
+        conv = Conversation(
             request.max_tokens,
             request.gpt4,
         )
