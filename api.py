@@ -7,6 +7,8 @@ from openai_dm.conversation import Conversation
 
 app = FastAPI()
 
+conv = Conversation(20, True)
+
 
 class APIRequest(BaseModel):
     user_input: str
@@ -22,17 +24,6 @@ def predict(request: APIRequest):
             -H 'Content-Type: application/json'
             -d '{"user_input": "Hi, Dungeon Master!", "max_tokens": 50, "gpt4": True}'
     """
-    try:
-        conv
-    except NameError:
-        conv = Conversation(
-            request.max_tokens,
-            request.gpt4,
-        )
-        return JSONResponse(
-            content={"response": conv.current_node.context[-1]["content"]}
-        )
-
     reply = conv.send_message(request.user_input)
     return JSONResponse(content={"response": reply})
 
