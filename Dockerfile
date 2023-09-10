@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11
 
 WORKDIR /openai_dm
 
@@ -10,6 +10,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY .gitignore .
-COPY commands.sh .
+COPY on_start.sh .
+COPY secrets.sh .
+RUN chmod +x on_start.sh
+RUN chmod +x secrets.sh
 
-CMD ["jupyter", "--allow-root", "--no-browser", "--ip=0.0.0.0", "--port=8888"]
+ENTRYPOINT ["/bin/bash", "./on_start.sh"]
