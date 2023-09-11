@@ -1,3 +1,7 @@
+# AI Dungeon Master
+This project is an automated dungeon master for D&D 5e using OpenAI. Prompt engineering is managed with griptape.
+Currently, only character creation is supported.
+
 Set up your API Key:
 - Visit https://platform.openai.com/account/api-keys to get an API Key.
 - `cp .env.example .emv`
