@@ -6,7 +6,6 @@ from griptape.memory.structure import ConversationMemory
 from griptape.structures import Agent
 
 from .character_sheet import Character
-from .nodes import SelectionNode
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
