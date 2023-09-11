@@ -1,12 +1,16 @@
 import json
-from typing import Optional
+
+from griptape.rules import Rule, Ruleset
+from griptape.drivers import OpenAiChatPromptDriver
+from griptape.memory.structure import ConversationMemory
+from griptape.structures import Agent
 
 from .character_sheet import Character
 from .nodes import SelectionNode
 
 CONVERSATION_GRAPH = {
-    "race": ["class_name"],
-    "class_name": [],
+    "race": ["class_"],
+    "class_": [],
 }
 
 # NODE_MAP = {"race": RaceSelection, "class": ClassSelection}
@@ -14,56 +18,67 @@ CONVERSATION_GRAPH = {
 
 class Conversation:
     def __init__(
-        self,
-        max_tokens: int,
-        gpt4: bool = False,
-        character_sheet: Optional[Character] = Character(),
-        start_node_name: str = "race",
+        self, name: str = "AI Dungeon Master", gpt4: bool = True, max_tokens: int = 100
     ):
-        self.max_tokens = max_tokens
-        self.gpt4 = gpt4
-        self.character_sheet = character_sheet
-        self.current_node_name = start_node_name
-
-        self.current_node = SelectionNode(
-            self.max_tokens, self.gpt4, self.character_sheet, self.current_node_name
+        self.name = name
+        self.main_rules = Ruleset(
+            name="Character Creation Rules",
+            rules=[
+                Rule(
+                    "You are the dungeon master of a 5e campaign, assisting the user with character creation."
+                ),
+                Rule(
+                    "Be brief when you response; give minimal but complete information unless the user asks for more."
+                ),
+                Rule("Discuss only topics related to D&D."),
+            ],
         )
-        self.history = []
-        self.costs = None
-        self._update_costs()
+        self.gpt4 = gpt4
+        self.max_tokens = max_tokens
+        self.agent = None
+        self.test = None
+        self.character_sheet = None
 
-    def send_message(self, user_input: str) -> str:
-        """Sends a message to the AI dm"""
-        reply = self.current_node.send_message(user_input)
+    def _start_node(self, node_name="race"):
+        self.current_node = node_name
+        self.character_sheet = Character()
+        additional_rules = [
+            f"You are helping the player choose a {node_name}."
+            f"Once they have chosen a {node_name}, return only a json: {{{{ {node_name}: chosen {node_name} }}}}"
+        ]
+        node_rules = [self.main_rules]
+        node_rules.append(
+            Ruleset(
+                name=f"{node_name} rules", rules=[Rule(x) for x in additional_rules]
+            )
+        )
+        self.agent = Agent(
+            rulesets=node_rules,
+            prompt_driver=OpenAiChatPromptDriver(
+                model="gpt-4" if self.gpt4 else "gpt-3.5-turbo",
+                max_tokens=self.max_tokens,
+            ),
+            memory=ConversationMemory(),
+        )
+
+    def run(self, user_input: str):
+        output_task = self.agent.run(user_input)
         try:
-            reply = json.loads(reply)
+            update_json = json.loads(output_task.output.value)
+            if "class" in update_json.keys():
+                update_json["class_"] = update_json.pop("class")
+            self.character_sheet.update(update_json)
 
-            self.history.append(self.current_node)
-            self._update_costs()
-            self.character_sheet = self.current_node.character_sheet
-            if CONVERSATION_GRAPH[self.current_node_name]:
-                self.current_node_name = CONVERSATION_GRAPH[self.current_node_name][0]
-                self.current_node = SelectionNode(
-                    self.max_tokens,
-                    self.gpt4,
-                    self.character_sheet,
-                    self.current_node_name,
-                )
-                print("all done")
-            return json.dumps(reply)
+            next_node = CONVERSATION_GRAPH[self.current_node]
+            if next_node == []:
+                print("all done!")
+                return "All done!"
+            else:
+                self.current_node = next_node
+
+            if self.current_node == "class_":
+                self._start_node(self.current_node[:-1])
+            else:
+                self._start_node(self.current_node)
         except ValueError:
-            return reply
-
-    def _update_costs(self):
-        if not self.costs:
-            self.costs = {
-                "prompt_tokens": self.current_node.prompt_tokens,
-                "completion_tokens": self.current_node.completion_tokens,
-                "prompt-cost": self.current_node.prompt_cost,
-                "completion_cost": self.current_node.completion_cost,
-            }
-        else:
-            self.costs["prompt_tokens"] += self.current_node.prompt_tokens
-            self.costs["completion_tokens"] += self.current_node.completion_tokens
-            self.costs["prompt-cost"] += self.current_node.prompt_cost
-            self.costs["completion_cost"] += self.current_node.completion_cost
+            pass
