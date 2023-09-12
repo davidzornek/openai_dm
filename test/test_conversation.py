@@ -12,7 +12,6 @@ class TestConversation(unittest.TestCase):
         test_args = {
             "max_tokens": 20,
             "gpt4": False,
-            "start_node_name": "race",
         }
 
         mock_create.return_value = {
@@ -33,12 +32,8 @@ class TestConversation(unittest.TestCase):
 
         # Test Instantiation
         conv = conversation.Conversation(**test_args)
-        self.assertEqual(
-            conv.current_node.context[-1]["content"], "This is a mocked response."
-        )
-
         # Test when a string is input to send_message, and a string is returned
-        reply = conv.send_message("Say something to API.")
+        reply = conv.run("Say something to API.")
         self.assertEqual(reply, "This is a mocked response.")
 
         # Test when a string is input to send_message, and a json is returned, triggering
@@ -46,10 +41,10 @@ class TestConversation(unittest.TestCase):
         mock_create.return_value["choices"][0]["message"][
             "content"
         ] = '{"race": "human"}'
-        reply = conv.send_message("Say something to API.")
+        reply = conv.run("Say something to API.")
         self.assertEqual(reply, '{"race": "human"}')
         self.assertEqual(conv.character_sheet.race, "human")
-        self.assertEqual(conv.current_node_name, "class_name")
+        self.assertEqual(conv.current_node_name, "class_")
 
 
 if __name__ == "__main__":
