@@ -12,8 +12,6 @@ CONVERSATION_GRAPH = {
     "class_": [],
 }
 
-# NODE_MAP = {"race": RaceSelection, "class": ClassSelection}
-
 
 class Conversation:
     def __init__(
@@ -24,12 +22,14 @@ class Conversation:
             name="Character Creation Rules",
             rules=[
                 Rule(
-                    "You are the dungeon master of a 5e campaign, assisting the user with character creation."
+                    """You are the dungeon master of a 5e campaign, assisting the user 
+                     with character creation."""
                 ),
                 Rule(
-                    "Be brief when you response; give minimal but complete information unless the user asks for more."
+                    """Be brief when you response; give minimal but complete information 
+                    unless the user asks for more."""
                 ),
-                Rule("Discuss only topics related to D&D."),
+                Rule("""Discuss only topics related to D&D."""),
             ],
         )
         self.gpt4 = gpt4
@@ -42,8 +42,8 @@ class Conversation:
         self.current_node = node_name
         self.character_sheet = Character()
         additional_rules = [
-            f"You are helping the player choose a {node_name}."
-            f"Once they have chosen a {node_name}, return only a json: {{{{ {node_name}: chosen {node_name} }}}}"
+            f"""You are helping the player choose a {node_name}. Once they have chosen a 
+            {node_name}, return only a json: {{{{ {node_name}: chosen {node_name} }}}}"""
         ]
         node_rules = [self.main_rules]
         node_rules.append(
