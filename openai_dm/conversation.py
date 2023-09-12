@@ -37,8 +37,9 @@ class Conversation:
         self.agent = None
         self.test = None
         self.character_sheet = None
+        self._start_node(node_name="race")
 
-    def _start_node(self, node_name="race"):
+    def _start_node(self, node_name: str):
         self.current_node = node_name
         self.character_sheet = Character()
         additional_rules = [
@@ -80,4 +81,4 @@ class Conversation:
             else:
                 self._start_node(self.current_node)
         except ValueError:
-            pass
+            return output_task.output.value
