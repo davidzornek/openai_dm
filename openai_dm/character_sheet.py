@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 
@@ -47,16 +47,20 @@ class SkillProficiences:
 @dataclass
 class Character:
     name: Optional[str] = None
-    class_name: Optional[str] = None
+    class_: Optional[str] = None
     subclasse: Optional[str] = None
     level: int = 1
     race: Optional[str] = None
     alignment: Optional[str] = None
     background: Optional[str] = None
     proficiency_bonus: int = 2
-    ability_scores: AbilityScores = AbilityScores()
-    saving_throw_proficiencies: SavingThrowProficiences = SavingThrowProficiences()
-    skill_proficiencies: SkillProficiences = SkillProficiences()
+    ability_scores: AbilityScores = field(default_factory=lambda: AbilityScores())
+    saving_throw_proficiencies: SavingThrowProficiences = field(
+        default_factory=lambda: SavingThrowProficiences()
+    )
+    skill_proficiencies: SkillProficiences = field(
+        default_factory=lambda: SkillProficiences()
+    )
     AC: int = 10
     speed: int = 30
     hit_point_max: int = 6

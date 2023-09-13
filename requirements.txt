@@ -1,4 +1,7 @@
 openai~=0.27.0
+pydantic==1.10.9 ## langchain gives errors with current version of pydantic
+langchain==0.0.285 ## don't trust stability as version changes
+griptape==0.15.2 ## don't trust stability as version changes
 jupyter
 black
 flake8
