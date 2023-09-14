@@ -1,6 +1,6 @@
-FROM python:3.9
+FROM python:3.11
 
-WORKDIR /src
+WORKDIR /openai_dm
 
 RUN apt-get update
 RUN apt-get install -y vim
@@ -10,8 +10,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY .gitignore .
-COPY commands.sh .
+COPY on_start.sh .
+COPY secrets.sh .
+RUN chmod +x on_start.sh
+RUN chmod +x secrets.sh
 
-# CMD source openai/commands.sh
-
-CMD ["bash"]
+ENTRYPOINT ["/bin/bash", "./on_start.sh"]
