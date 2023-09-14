@@ -1,8 +1,8 @@
 import json
 from typing import Optional
 
-from .character_sheet import Character
-from .nodes import SelectionNode
+from character_sheet import Character
+from nodes import SelectionNode
 
 CONVERSATION_GRAPH = {
     "race": ["class_name"],
