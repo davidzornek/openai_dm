@@ -1,4 +1,5 @@
 import json
+import logging
 
 from griptape.rules import Rule, Ruleset
 from griptape.drivers import OpenAiChatPromptDriver
@@ -15,7 +16,11 @@ CONVERSATION_GRAPH = {
 
 class Conversation:
     def __init__(
-        self, name: str = "AI Dungeon Master", gpt4: bool = True, max_tokens: int = 100
+        self,
+        name: str = "AI Dungeon Master",
+        gpt4: bool = True,
+        max_tokens: int = 100,
+        logger_level: int = logging.INFO,
     ):
         self.name = name
         self.main_rules = Ruleset(
@@ -34,6 +39,7 @@ class Conversation:
         )
         self.gpt4 = gpt4
         self.max_tokens = max_tokens
+        self.logger_level = logger_level
         self.agent = None
         self.test = None
         self.character_sheet = None
@@ -54,11 +60,15 @@ class Conversation:
         )
         self.agent = Agent(
             rulesets=node_rules,
+            logger_level=self.logger_level,
             prompt_driver=OpenAiChatPromptDriver(
                 model="gpt-4" if self.gpt4 else "gpt-3.5-turbo",
                 max_tokens=self.max_tokens,
             ),
             memory=ConversationMemory(),
+        )
+        return self.agent.run(
+            "Introduce yourself to the user and tell them which part of character creation we're working on."
         )
 
     def run(self, user_input: str):
@@ -77,8 +87,8 @@ class Conversation:
                 self.current_node = next_node
 
             if self.current_node == "class_":
-                self._start_node(self.current_node[:-1])
+                return self._start_node(self.current_node[:-1])
             else:
-                self._start_node(self.current_node)
+                return self._start_node(self.current_node)
         except ValueError:
-            return output_task.output.value
+            return output_task
