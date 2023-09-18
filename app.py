@@ -1,8 +1,7 @@
 import logging
 
 # from dotenv import load_dotenv
-from griptape.structures import Agent
-from griptape.utils import Chat  #   <-- Added Chat
+from griptape.utils import Chat
 
 from openai_dm.conversation import Conversation
 
