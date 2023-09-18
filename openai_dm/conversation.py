@@ -9,7 +9,8 @@ from .character_sheet import Character
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
-    "class_": [],
+    "class_": ["ability_scores"],
+    "ability_Scores": [],
 }
 
 
@@ -30,18 +31,19 @@ class Conversation:
                     unless the user asks for more."""
                 ),
                 Rule("""Discuss only topics related to D&D."""),
+                Rule("""Whenever you see the word 'class_', treat it at 'class'."""),
             ],
         )
         self.gpt4 = gpt4
         self.max_tokens = max_tokens
         self.agent = None
         self.test = None
-        self.character_sheet = None
+        self.character_sheet = Character()
         self._start_node(node_name="race")
+        self.agent.run("introduce yourself.")
 
     def _start_node(self, node_name: str):
         self.current_node = node_name
-        self.character_sheet = Character()
         additional_rules = [
             f"""You are helping the player choose a {node_name}. Once they have chosen a
             {node_name}, return only a json: {{{{ {node_name}: chosen {node_name} }}}}"""
@@ -67,13 +69,23 @@ class Conversation:
             update_json = json.loads(output_task.output.value)
             if "class" in update_json.keys():
                 update_json["class_"] = update_json.pop("class")
+                self.current_node = "class_"
             self.character_sheet.update(update_json)
 
-            next_node = CONVERSATION_GRAPH[self.current_node]
+            print(self.current_node)
+            next_node = CONVERSATION_GRAPH[self.current_node][0]
+            print(next_node)
             if next_node == []:
                 print("all done!")
                 return "All done!"
             else:
+                self.agent.run(
+                    f"""You've just helped the user select a {self.current_node},
+                    and next you will help them select a {next_node}. Let the
+                    user know that their choice has been logged to their character
+                    sheet and tell them what's next.
+                    """
+                )
                 self.current_node = next_node
 
             if self.current_node == "class_":
