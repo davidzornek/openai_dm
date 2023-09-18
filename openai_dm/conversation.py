@@ -71,7 +71,7 @@ class Conversation:
         )
         return self.agent.run(
             """
-            Introduce yourself to the user and tell them which part 
+            Introduce yourself to the user and tell them which part
             of character creation we're working on.
         """
         )
