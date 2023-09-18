@@ -69,6 +69,11 @@ class Conversation:
             ),
             memory=ConversationMemory(),
         )
+        # call to agent_run below isn't printing anything to the terminal
+        print(
+            f"""I'm the assistant DM, here to help with character creation.
+            Let's start with choosing a {node_name}"""
+        )
         return self.agent.run(
             """
             Introduce yourself to the user and tell them which part
@@ -85,9 +90,7 @@ class Conversation:
                 self.current_node = "class_"
             self.character_sheet.update(update_json)
 
-            print(self.current_node)
             next_node = CONVERSATION_GRAPH[self.current_node][0]
-            print(next_node)
             if next_node == []:
                 print("all done!")
                 return "All done!"

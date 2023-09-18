@@ -11,7 +11,7 @@ from openai_dm.conversation import Conversation
 
 def main():
     conv = Conversation(logger_level=logging.ERROR)
-    Chat(Conversation(logger_level=logging.ERROR)).start()
+    Chat(conv).start()
 
 
 if __name__ == "__main__":
