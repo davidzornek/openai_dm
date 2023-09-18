@@ -68,7 +68,10 @@ class Conversation:
             memory=ConversationMemory(),
         )
         return self.agent.run(
-            "Introduce yourself to the user and tell them which part of character creation we're working on."
+            """
+            Introduce yourself to the user and tell them which part 
+            of character creation we're working on.
+        """
         )
 
     def run(self, user_input: str):
