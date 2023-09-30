@@ -9,7 +9,8 @@ from schema import Schema, Literal
 class CharacterSheetUpdater(BaseTool):
     @activity(
         config={
-            "description": "Can be used to update the player's character sheet and return the updated sheet as json",
+            "description": """Can be used to update the player's character sheet and 
+            return the updated sheet as json""",
             "schema": Schema(
                 {
                     Literal(
