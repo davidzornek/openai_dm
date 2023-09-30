@@ -7,7 +7,7 @@ class AbilityScores:
     strength: int = 8
     dexterity: int = 8
     constitution: int = 8
-    intellgience: int = 8
+    intelligence: int = 8
     wisdom: int = 8
     charisma: int = 8
 
@@ -54,7 +54,18 @@ class Character:
     alignment: Optional[str] = None
     background: Optional[str] = None
     proficiency_bonus: int = 2
-    ability_scores: AbilityScores = field(default_factory=lambda: AbilityScores())
+    base_ability_scores: AbilityScores = field(default_factory=lambda: AbilityScores())
+    racial_ability_bonus: AbilityScores = field(
+        default_factory=lambda: AbilityScores(
+            strength=0,
+            dexterity=0,
+            constitution=0,
+            intelligence=0,
+            wisdom=0,
+            charisma=0,
+        )
+    )
+    final_ability_scores: AbilityScores = field(default_factory=lambda: AbilityScores())
     saving_throw_proficiencies: SavingThrowProficiences = field(
         default_factory=lambda: SavingThrowProficiences()
     )
@@ -69,3 +80,9 @@ class Character:
         for k, v in new_values.items():
             if hasattr(self, k):
                 setattr(self, k, v.lower())
+
+    def apply_racial_ability_bonus(self):
+        for k in self.base_ability_scores.__dataclass_fields__:
+            base_score = getattr(self.base_ability_scores, k)
+            racial_bonus = getattr(self.racial_ability_bonus, k)
+            setattr(self.final_ability_scores, k, base_score + racial_bonus)

@@ -15,4 +15,5 @@ COPY secrets.sh .
 RUN chmod +x on_start.sh
 RUN chmod +x secrets.sh
 
-ENTRYPOINT ["/bin/bash", "./on_start.sh"]
+# ENTRYPOINT ["/bin/bash", "./on_start.sh"]
+CMD [ "/bin/bash" ]
