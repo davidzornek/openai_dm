@@ -1,0 +1,5 @@
+version: "v1"
+name: Character Sheet Updater
+description: Tool for updating character sheets.
+contact_email: david.zornek@gmail.com
+legal_info_url: https://www.griptape.ai/legal
