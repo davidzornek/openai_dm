@@ -7,7 +7,7 @@ class AbilityScores:
     strength: int = 8
     dexterity: int = 8
     constitution: int = 8
-    intellgience: int = 8
+    intelligence: int = 8
     wisdom: int = 8
     charisma: int = 8
 
