@@ -1,6 +1,5 @@
 import json
 
-from griptape.artifacts import TextArtifact
 from griptape.utils.decorators import activity
 from griptape.tools import BaseTool
 from schema import Schema, Literal
