@@ -1,4 +1,6 @@
 from dataclasses import dataclass, field
+import math
+import random
 from typing import Optional
 
 
@@ -74,6 +76,7 @@ class Character:
     )
     AC: int = 10
     speed: int = 30
+    hit_die: int = 6
     hit_point_max: int = 6
 
     def update(self, new_values: dict):
@@ -86,3 +89,16 @@ class Character:
             base_score = getattr(self.base_ability_scores, k)
             racial_bonus = getattr(self.racial_ability_bonus, k)
             setattr(self.final_ability_scores, k, base_score + racial_bonus)
+
+    def update_max_hp(self, roll_hp=True):
+        constitution_modifier = (self.final_ability_scores.constitution - 10) // 2
+        max_hp = self.hit_die + constitution_modifier
+        if roll_hp:
+            for i in range(2, self.level + 1):
+                rolled_hp = random.randint(1, self.hit_die)
+                max_hp += rolled_hp + constitution_modifier
+        else:
+            max_hp += (self.level - 1) * (
+                math.ceil((self.hit_die + 1) / 2) + constitution_modifier
+            )
+        self.hit_point_max = max_hp

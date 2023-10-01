@@ -70,12 +70,17 @@ class CharacterSheetUpdater(BaseTool):
                         ['wisdom', 'charisma']
                         """,
                     ): list,
+                    Literal(
+                        "hit_die",
+                        description="""Maximum value of the hit die for the chosen class""",
+                    ): int,
                 }
             ),
         }
     )
     def update_class(self, params: dict) -> Character:
         self.character_sheet.class_ = params["values"]["class"].lower()
+        self.character_sheet.hit_die = params["values"]["hit_die"]
         saving_throws = params["values"]["saving_throws"]
 
         saving_throw_proficiences = SavingThrowProficiencies()
@@ -83,6 +88,7 @@ class CharacterSheetUpdater(BaseTool):
             setattr(saving_throw_proficiences, x.lower(), True)
 
         self.character_sheet.saving_throw_proficiencies = saving_throw_proficiences
+        self.character_sheet.update_max_hp()
         return self.character_sheet
 
     @activity(
@@ -111,4 +117,5 @@ class CharacterSheetUpdater(BaseTool):
 
         self.character_sheet.base_ability_scores = base_ability_scores
         self.character_sheet.apply_racial_ability_bonus()
+        self.character_sheet.update_max_hp()
         return self.character_sheet
