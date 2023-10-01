@@ -84,7 +84,7 @@ class Conversation:
         node_rules.append(
             Ruleset(
                 name=f"{node_name} rules",
-                rules=[Rule(x) for x in NODE_RULES[node_name]],
+                rules=[Rule(x) for x in NODE_RULES[self.current_node]],
             )
         )
 

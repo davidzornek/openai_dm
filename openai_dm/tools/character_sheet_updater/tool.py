@@ -30,7 +30,7 @@ class CharacterSheetUpdater(BaseTool):
                         Example 2: Tiefling
                         {"intelligence": 1, "charisma": 2}
                         """,
-                    ): str,
+                    ): dict,
                     Literal("race", description="The race chosen by the player"): str,
                 }
             ),
@@ -38,7 +38,7 @@ class CharacterSheetUpdater(BaseTool):
     )
     def update_race(self, params: dict) -> Character:
         self.character_sheet.race = params["values"]["race"].lower()
-        racial_bonus_dict = json.loads(params["values"]["racial_bonuses"])
+        racial_bonuses = params["values"]["racial_bonuses"]
 
         racial_ability_bonus = AbilityScores(
             strength=0,
@@ -48,7 +48,7 @@ class CharacterSheetUpdater(BaseTool):
             wisdom=0,
             charisma=0,
         )
-        for k, v in racial_bonus_dict.items():
+        for k, v in racial_bonuses.items():
             setattr(racial_ability_bonus, k.lower(), v)
 
         self.character_sheet.racial_ability_bonus = racial_ability_bonus
@@ -67,18 +67,18 @@ class CharacterSheetUpdater(BaseTool):
                     Literal(
                         "saving_throws",
                         description="""
-                        A json of saving throw proficiences.
+                        A list of saving throw proficiences.
                         Example: Cleric
-                        {'wisdom': True, 'charisma': True}
+                        ['wisdom', 'charisma']
                         """,
-                    ): str,
+                    ): list,
                 }
             ),
         }
     )
     def update_class(self, params: dict) -> Character:
         self.character_sheet.class_ = params["values"]["class"].lower()
-        saving_throws = json.loads(params["values"]["saving_throws"])
+        saving_throws = params["values"]["saving_throws"]
 
         saving_throw_proficiences = SavingThrowProficiencies()
         for x in saving_throws:
@@ -100,14 +100,14 @@ class CharacterSheetUpdater(BaseTool):
                         {"strength": 8, "dexterity": 10, "constitution": 12,
                         "intelligence": 13, "wisdom": 14, "charisma": 15}
                         """,
-                    ): str,
+                    ): dict,
                 }
             ),
         }
     )
     def update_ability_scores(self, params: dict) -> Character:
-        ability_scores = json.loads(params["values"]["ability_scores"])
-        ability_scores = {k.lower(): v for k, v in ability_scores.items()}
+        ability_scores = params["values"]["ability_scores"].items()
+        ability_scores = {k.lower(): v for k, v in ability_scores}
 
         base_ability_scores = AbilityScores(**ability_scores)
 
