@@ -7,7 +7,7 @@ from schema import Schema, Literal
 from openai_dm.character_sheet import (
     AbilityScores,
     Character,
-    SavingThrowProficiences,
+    SavingThrowProficiencies,
 )
 
 
@@ -80,7 +80,7 @@ class CharacterSheetUpdater(BaseTool):
         self.character_sheet.class_ = params["values"]["class"].lower()
         saving_throws = json.loads(params["values"]["saving_throws"])
 
-        saving_throw_proficiences = SavingThrowProficiences()
+        saving_throw_proficiences = SavingThrowProficiencies()
         for x in saving_throws:
             setattr(saving_throw_proficiences, x.lower(), True)
 

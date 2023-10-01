@@ -12,7 +12,7 @@ from openai_dm.tools import CharacterSheetUpdater
 CONVERSATION_GRAPH = {
     "race": ["class_"],
     "class_": ["ability_scores"],
-    "ability_Scores": [],
+    "ability_scores": [],
 }
 
 
