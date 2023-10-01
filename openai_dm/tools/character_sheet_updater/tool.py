@@ -86,3 +86,31 @@ class CharacterSheetUpdater(BaseTool):
 
         self.character_sheet.saving_throw_proficiencies = saving_throw_proficiences
         return self.character_sheet
+
+    @activity(
+        config={
+            "description": "Can be used to update the character sheet with new ability scores.",
+            "schema": Schema(
+                {
+                    Literal(
+                        "ability_scores",
+                        description="""
+                        A json of ability scores.
+                        Example:
+                        {"strength": 8, "dexterity": 10, "constitution": 12,
+                        "intelligence": 13, "wisdom": 14, "charisma": 15}
+                        """,
+                    ): str,
+                }
+            ),
+        }
+    )
+    def update_ability_scores(self, params: dict) -> Character:
+        ability_scores = json.loads(params["values"]["ability_scores"])
+        ability_scores = {k.lower(): v for k, v in ability_scores.items()}
+
+        base_ability_scores = AbilityScores(**ability_scores)
+
+        self.character_sheet.base_ability_scores = base_ability_scores
+        self.character_sheet.apply_racial_ability_bonus()
+        return self.character_sheet
