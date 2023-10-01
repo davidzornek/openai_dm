@@ -1,4 +1,3 @@
-import json
 import logging
 
 from griptape.rules import Rule, Ruleset
@@ -12,8 +11,7 @@ from openai_dm.tools import CharacterSheetUpdater
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
-    "class_": [],
-    # "class_": ["ability_scores"],
+    "class_": ["ability_scores"],
     "ability_Scores": [],
 }
 
