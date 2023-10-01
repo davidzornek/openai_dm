@@ -7,12 +7,27 @@ from griptape.memory.structure import ConversationMemory
 from griptape.structures import Agent
 
 from openai_dm.character_sheet import Character
-from openai_dm.tools import CharacterSheetUpdater
+from openai_dm.tools import CharacterSheetUpdater, CharacterSheetInspector
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
     "class_": ["ability_scores"],
-    "ability_Scores": [],
+    "ability_scores": [],
+}
+
+NODE_RULES = {
+    "race": [],
+    "class_": [],
+    "ability_scores": [
+        """First, find out which method the user wants to use: standard array,
+        point buy, or roll for scores.""",
+        """Once you know the method, offer to optimize them for the user's class,
+        which you can obtain from their character sheet.""",
+        """If you optimize the ability scores, do not immediately update the
+        character sheet with new ability scores. Instead, ask their permission."""
+        """Update the character sheet with new ability scores after the user gives
+        permission to do so.""",
+    ],
 }
 
 
@@ -53,7 +68,8 @@ class Conversation:
         self.current_node = node_name
         if node_name[-1] == "_":
             node_name = node_name[:-1]
-        additional_rules = [
+
+        node_initialization_rules = [
             f"""You are helping the player choose a {node_name}. Once they have chosen a
             {node_name} update the character sheet with the new {node_name}""",
             '''After updating the character sheet say only "change_node"''',
@@ -61,9 +77,17 @@ class Conversation:
         node_rules = [self.main_rules]
         node_rules.append(
             Ruleset(
-                name=f"{node_name} rules", rules=[Rule(x) for x in additional_rules]
+                name="node_initalization_rules",
+                rules=[Rule(x) for x in node_initialization_rules],
             )
         )
+        node_rules.append(
+            Ruleset(
+                name=f"{node_name} rules",
+                rules=[Rule(x) for x in NODE_RULES[self.current_node]],
+            )
+        )
+
         self.agent = Agent(
             rulesets=node_rules,
             logger_level=self.logger_level,
@@ -76,7 +100,11 @@ class Conversation:
                 CharacterSheetUpdater(
                     character_sheet=self.character_sheet,
                     output_memory={"update_race": [BlobToolMemory()]},
-                )
+                ),
+                CharacterSheetInspector(
+                    character_sheet=self.character_sheet,
+                    output_memory={"query_character_sheet": [BlobToolMemory()]},
+                ),
             ],
         )
         # call to agent_run below isn't printing anything to the terminal

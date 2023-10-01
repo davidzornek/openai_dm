@@ -13,7 +13,7 @@ class AbilityScores:
 
 
 @dataclass
-class SavingThrowProficiences:
+class SavingThrowProficiencies:
     strength: bool = False
     dexterity: bool = False
     constitution: bool = False
@@ -23,7 +23,7 @@ class SavingThrowProficiences:
 
 
 @dataclass
-class SkillProficiences:
+class SkillProficiencies:
     acrobatics: bool = False
     animal_handling: bool = False
     arcana: bool = False
@@ -66,11 +66,11 @@ class Character:
         )
     )
     final_ability_scores: AbilityScores = field(default_factory=lambda: AbilityScores())
-    saving_throw_proficiencies: SavingThrowProficiences = field(
-        default_factory=lambda: SavingThrowProficiences()
+    saving_throw_proficiencies: SavingThrowProficiencies = field(
+        default_factory=lambda: SavingThrowProficiencies()
     )
-    skill_proficiencies: SkillProficiences = field(
-        default_factory=lambda: SkillProficiences()
+    skill_proficiencies: SkillProficiencies = field(
+        default_factory=lambda: SkillProficiencies()
     )
     AC: int = 10
     speed: int = 30
