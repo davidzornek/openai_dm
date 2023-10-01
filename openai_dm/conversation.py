@@ -15,6 +15,21 @@ CONVERSATION_GRAPH = {
     "ability_scores": [],
 }
 
+NODE_RULES = {
+    "race": [],
+    "class_": [],
+    "ability_scores": [
+        """First, find out which method the user wants to use: standard array,
+        point buy, or roll for scores.""",
+        """Once you know the method, offer to optimize them for the user's class,
+        which you can obtain from their character sheet.""",
+        """If you optimize the ability scores, do not immediately update the
+        character sheet with new ability scores. Instead, ask their permission."""
+        """Update the character sheet with new ability scores after the user gives
+        permission to do so.""",
+    ],
+}
+
 
 class Conversation:
     def __init__(
@@ -53,7 +68,8 @@ class Conversation:
         self.current_node = node_name
         if node_name[-1] == "_":
             node_name = node_name[:-1]
-        additional_rules = [
+
+        node_initialization_rules = [
             f"""You are helping the player choose a {node_name}. Once they have chosen a
             {node_name} update the character sheet with the new {node_name}""",
             '''After updating the character sheet say only "change_node"''',
@@ -61,7 +77,14 @@ class Conversation:
         node_rules = [self.main_rules]
         node_rules.append(
             Ruleset(
-                name=f"{node_name} rules", rules=[Rule(x) for x in additional_rules]
+                name="node_initalization_rules",
+                rules=[Rule(x) for x in node_initialization_rules],
+            )
+        )
+        node_rules.append(
+            Ruleset(
+                name=f"{node_name} rules",
+                rules=[Rule(x) for x in NODE_RULES[node_name]],
             )
         )
 

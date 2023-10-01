@@ -16,7 +16,7 @@ class CharacterSheetInspector(BaseTool):
 
     @activity(
         config={
-            "description": "Can be used to get information about the player's character",
+            "description": "Use this whenever you need information about a players character.",
             "schema": Schema(
                 {
                     Literal(
@@ -29,7 +29,7 @@ class CharacterSheetInspector(BaseTool):
                         Example 2:
                         ['saving_throw_proficiences', 'skill_proficiences']
                         """,
-                    ): str,
+                    ): list,
                 }
             ),
         }
