@@ -7,7 +7,7 @@ from griptape.memory.structure import ConversationMemory
 from griptape.structures import Agent
 
 from openai_dm.character_sheet import Character
-from openai_dm.tools import CharacterSheetUpdater
+from openai_dm.tools import CharacterSheetUpdater, CharacterSheetInspector
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
@@ -64,6 +64,7 @@ class Conversation:
                 name=f"{node_name} rules", rules=[Rule(x) for x in additional_rules]
             )
         )
+
         self.agent = Agent(
             rulesets=node_rules,
             logger_level=self.logger_level,
@@ -76,7 +77,11 @@ class Conversation:
                 CharacterSheetUpdater(
                     character_sheet=self.character_sheet,
                     output_memory={"update_race": [BlobToolMemory()]},
-                )
+                ),
+                CharacterSheetInspector(
+                    character_sheet=self.character_sheet,
+                    output_memory={"query_character_sheet": [BlobToolMemory()]},
+                ),
             ],
         )
         # call to agent_run below isn't printing anything to the terminal
