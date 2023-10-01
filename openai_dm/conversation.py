@@ -1,12 +1,13 @@
-import json
 import logging
 
 from griptape.rules import Rule, Ruleset
 from griptape.drivers import OpenAiChatPromptDriver
+from griptape.memory.tool import BlobToolMemory
 from griptape.memory.structure import ConversationMemory
 from griptape.structures import Agent
 
-from .character_sheet import Character
+from openai_dm.character_sheet import Character
+from openai_dm.tools import CharacterSheetUpdater
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
@@ -20,7 +21,7 @@ class Conversation:
         self,
         name: str = "AI Dungeon Master",
         gpt4: bool = True,
-        max_tokens: int = 100,
+        max_tokens: int = 500,
         logger_level: int = logging.INFO,
     ):
         self.name = name
@@ -50,9 +51,12 @@ class Conversation:
 
     def _start_node(self, node_name: str):
         self.current_node = node_name
+        if node_name[-1] == "_":
+            node_name = node_name[:-1]
         additional_rules = [
             f"""You are helping the player choose a {node_name}. Once they have chosen a
-            {node_name}, return only a json: {{{{ {node_name}: chosen {node_name} }}}}"""
+            {node_name} update the character sheet with the new {node_name}""",
+            '''After updating the character sheet say only "change_node"''',
         ]
         node_rules = [self.main_rules]
         node_rules.append(
@@ -68,6 +72,12 @@ class Conversation:
                 max_tokens=self.max_tokens,
             ),
             memory=ConversationMemory(),
+            tools=[
+                CharacterSheetUpdater(
+                    character_sheet=self.character_sheet,
+                    output_memory={"update_race": [BlobToolMemory()]},
+                )
+            ],
         )
         # call to agent_run below isn't printing anything to the terminal
         print(
@@ -82,19 +92,18 @@ class Conversation:
         )
 
     def run(self, user_input: str):
-        output_task = self.agent.run(user_input)
-        try:
-            update_json = json.loads(output_task.output.value)
-            if "class" in update_json.keys():
-                update_json["class_"] = update_json.pop("class")
-                self.current_node = "class_"
-            self.character_sheet.update(update_json)
+        response = self.agent.run(user_input)
+        if response.output.value == "change_node":
+            character_sheet_updater = [
+                x for x in self.agent.tools if isinstance(x, CharacterSheetUpdater)
+            ][0]
+            self.character_sheet = character_sheet_updater.character_sheet
 
-            next_node = CONVERSATION_GRAPH[self.current_node][0]
-            if next_node == []:
+            if CONVERSATION_GRAPH[self.current_node] == []:
                 print("all done!")
                 return "All done!"
             else:
+                next_node = CONVERSATION_GRAPH[self.current_node][0]
                 self.agent.run(
                     f"""You've just helped the user select a {self.current_node},
                     and next you will help them select a {next_node}. Let the
@@ -104,9 +113,6 @@ class Conversation:
                 )
                 self.current_node = next_node
 
-            if self.current_node == "class_":
-                return self._start_node(self.current_node[:-1])
-            else:
-                return self._start_node(self.current_node)
-        except ValueError:
-            return output_task
+            return self._start_node(self.current_node)
+        else:
+            return response
