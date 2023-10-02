@@ -13,7 +13,8 @@ CONVERSATION_GRAPH = {
     "race": ["class_"],
     "class_": ["ability_scores"],
     "ability_scores": ["background"],
-    "background": [],
+    "background": ["skill_proficiencies"],
+    "skill_proficiencies": [],
 }
 
 NODE_RULES = {
@@ -32,6 +33,12 @@ NODE_RULES = {
     "background": [
         """Update the character sheet with a new background only after the
         user gives permission to do so.""",
+    ],
+    "skill_proficiencies": [
+        """The player's class allows them to choose skill proficiencies from 
+        a list specific to their class.""",
+        """You'll want to check which skill proficiencies they already have,
+        because there's no real reason to double up on them.""",
     ],
 }
 
