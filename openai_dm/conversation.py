@@ -2,8 +2,8 @@ import logging
 
 from griptape.rules import Rule, Ruleset
 from griptape.drivers import OpenAiChatPromptDriver
-from griptape.memory.tool import BlobToolMemory
 from griptape.memory.structure import ConversationMemory
+from griptape.memory.tool import BlobToolMemory
 from griptape.structures import Agent
 
 from openai_dm.character_sheet import Character
@@ -12,7 +12,8 @@ from openai_dm.tools import CharacterSheetUpdater, CharacterSheetInspector
 CONVERSATION_GRAPH = {
     "race": ["class_"],
     "class_": ["ability_scores"],
-    "ability_scores": [],
+    "ability_scores": ["background"],
+    "background": [],
 }
 
 NODE_RULES = {
@@ -27,6 +28,10 @@ NODE_RULES = {
         character sheet with new ability scores. Instead, ask their permission."""
         """Update the character sheet with new ability scores after the user gives
         permission to do so.""",
+    ],
+    "background": [
+        """Update the character sheet with a new background only after the 
+        user gives permission to do so.""",
     ],
 }
 
@@ -100,7 +105,6 @@ class Conversation:
             tools=[
                 CharacterSheetUpdater(
                     character_sheet=self.character_sheet,
-                    output_memory={"update_race": [BlobToolMemory()]},
                 ),
                 CharacterSheetInspector(
                     character_sheet=self.character_sheet,

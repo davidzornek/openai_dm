@@ -1,3 +1,4 @@
+from griptape.artifacts import InfoArtifact
 from griptape.utils.decorators import activity
 from griptape.tools import BaseTool
 from schema import Schema, Literal
@@ -51,7 +52,7 @@ class CharacterSheetUpdater(BaseTool):
 
         self.character_sheet.racial_ability_bonus = racial_ability_bonus
         self.character_sheet.apply_racial_ability_bonus()
-        return self.character_sheet
+        return InfoArtifact(self.character_sheet)
 
     @activity(
         config={
@@ -111,11 +112,14 @@ class CharacterSheetUpdater(BaseTool):
 
         self.character_sheet.saving_throw_proficiencies = saving_throw_proficiences
         self.character_sheet.update_max_hp()
-        return self.character_sheet
+        return InfoArtifact(self.character_sheet)
 
     @activity(
         config={
-            "description": "Can be used to update the character sheet with new ability scores.",
+            "description": """
+            Can be used to update the character sheet with new ability scores.
+            Only do this after asking the user's permission to update ability scores.
+            """,
             "schema": Schema(
                 {
                     Literal(
@@ -140,4 +144,37 @@ class CharacterSheetUpdater(BaseTool):
         self.character_sheet.base_ability_scores = base_ability_scores
         self.character_sheet.apply_racial_ability_bonus()
         self.character_sheet.update_max_hp()
-        return self.character_sheet
+        return InfoArtifact(self.character_sheet)
+
+    @activity(
+        config={
+            "description": "Can be used to update the character sheet with a new background.",
+            "schema": Schema(
+                {
+                    Literal(
+                        "background",
+                        description="""The background chosen by the player""",
+                    ): str,
+                    Literal(
+                        "skill_proficiencies",
+                        description="""
+                        Skill proficiences provided by the background
+                        Example: Charlatan
+                        ["deception", "sleight_of_hand"]
+                        """,
+                    ): list,
+                }
+            ),
+        }
+    )
+    def update_background(self, params: dict) -> Character:
+        self.character_sheet.background = params["values"]["background"]
+        skill_proficiencies = params["values"]["skill_proficiencies"]
+
+        for x in skill_proficiencies:
+            setattr(
+                self.character_sheet.skill_proficiencies,
+                x.lower().replace(" ", "_"),
+                True,
+            )
+        return InfoArtifact(self.character_sheet)
