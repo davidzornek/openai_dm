@@ -74,6 +74,22 @@ class CharacterSheetUpdater(BaseTool):
                         "hit_die",
                         description="""Maximum value of the hit die for the chosen class""",
                     ): int,
+                    Literal(
+                        "armor_proficiencies",
+                        description="""
+                        A list of armor proficiencies for the chosen class.
+                        Example: Ranger
+                        ['light armor', 'medium armor', 'shields']
+                        """,
+                    ): list,
+                    Literal(
+                        "weapon_proficiencies",
+                        description="""
+                        A list of armor proficiencies for the chosen class.
+                        Example: Warlock
+                        ['simple weapons']
+                        """,
+                    ): list,
                 }
             ),
         }
@@ -81,6 +97,12 @@ class CharacterSheetUpdater(BaseTool):
     def update_class(self, params: dict) -> Character:
         self.character_sheet.class_ = params["values"]["class"].lower()
         self.character_sheet.hit_die = params["values"]["hit_die"]
+        self.character_sheet.armor_proficiencies.extend(
+            [x.lower() for x in params["values"]["armor_proficiencies"]]
+        )
+        self.character_sheet.weapon_proficiencies.extend(
+            [x.lower() for x in params["values"]["weapon_proficiencies"]]
+        )
         saving_throws = params["values"]["saving_throws"]
 
         saving_throw_proficiences = SavingThrowProficiencies()

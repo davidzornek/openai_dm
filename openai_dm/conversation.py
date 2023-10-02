@@ -38,6 +38,7 @@ class Conversation:
         gpt4: bool = True,
         max_tokens: int = 500,
         logger_level: int = logging.INFO,
+        starting_node: str = "race",
     ):
         self.name = name
         self.main_rules = Ruleset(
@@ -61,7 +62,7 @@ class Conversation:
         self.agent = None
         self.test = None
         self.character_sheet = Character()
-        self._start_node(node_name="race")
+        self._start_node(node_name=starting_node)
         self.agent.run("introduce yourself.")
 
     def _start_node(self, node_name: str):
