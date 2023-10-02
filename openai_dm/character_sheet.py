@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 import math
 import random
-from typing import Optional
+from typing import Optional, List
 
 
 @dataclass
@@ -50,7 +50,7 @@ class SkillProficiencies:
 class Character:
     name: Optional[str] = None
     class_: Optional[str] = None
-    subclasse: Optional[str] = None
+    subclass: Optional[str] = None
     level: int = 1
     race: Optional[str] = None
     alignment: Optional[str] = None
@@ -74,6 +74,8 @@ class Character:
     skill_proficiencies: SkillProficiencies = field(
         default_factory=lambda: SkillProficiencies()
     )
+    armor_proficiencies: Optional[List[str]] = field(default_factory=lambda: [])
+    weapon_proficiencies: Optional[List[str]] = field(default_factory=lambda: [])
     AC: int = 10
     speed: int = 30
     hit_die: int = 6
