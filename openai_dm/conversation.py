@@ -30,7 +30,7 @@ NODE_RULES = {
         permission to do so.""",
     ],
     "background": [
-        """Update the character sheet with a new background only after the 
+        """Update the character sheet with a new background only after the
         user gives permission to do so.""",
     ],
 }
