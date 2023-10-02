@@ -35,7 +35,7 @@ NODE_RULES = {
         user gives permission to do so.""",
     ],
     "skill_proficiencies": [
-        """The player's class allows them to choose skill proficiencies from 
+        """The player's class allows them to choose skill proficiencies from
         a list specific to their class.""",
         """You'll want to check which skill proficiencies they already have,
         because there's no real reason to double up on them.""",
