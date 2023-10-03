@@ -13,7 +13,8 @@ CONVERSATION_GRAPH = {
     "race": ["class_"],
     "class_": ["ability_scores"],
     "ability_scores": ["background"],
-    "background": [],
+    "background": ["skill_proficiencies"],
+    "skill_proficiencies": [],
 }
 
 NODE_RULES = {
@@ -32,6 +33,12 @@ NODE_RULES = {
     "background": [
         """Update the character sheet with a new background only after the
         user gives permission to do so.""",
+    ],
+    "skill_proficiencies": [
+        """The player's class allows them to choose skill proficiencies from
+        a list specific to their class.""",
+        """You'll want to check which skill proficiencies they already have,
+        because there's no real reason to double up on them.""",
     ],
 }
 
@@ -67,8 +74,15 @@ class Conversation:
         self.agent = None
         self.test = None
         self.character_sheet = Character()
+        self.memory = ConversationMemory()
+        self.first_run = True
         self._start_node(node_name=starting_node)
-        self.agent.run("introduce yourself.")
+        # self.agent.run("Begin.")
+        # self.agent.run(f'''
+        #     Introduce yourself. Tell the user you're here to help them with creating
+        #     a character, as well as that we're starting with selecting {starting_node}.
+        #     Give them any basic information they might need to get started with that.
+        # ''')
 
     def _start_node(self, node_name: str):
         self.current_node = node_name
@@ -101,7 +115,7 @@ class Conversation:
                 model="gpt-4" if self.gpt4 else "gpt-3.5-turbo",
                 max_tokens=self.max_tokens,
             ),
-            memory=ConversationMemory(),
+            memory=self.memory,
             tools=[
                 CharacterSheetUpdater(
                     character_sheet=self.character_sheet,
@@ -112,21 +126,22 @@ class Conversation:
                 ),
             ],
         )
-        # call to agent_run below isn't printing anything to the terminal
-        print(
-            f"""I'm the assistant DM, here to help with character creation.
-            Let's start with choosing a {node_name}"""
-        )
-        return self.agent.run(
+        response = self.agent.run(
+            f"""
+            If first_run==True, then introduce yourself, tell them
+            you're here to help them with character creation, as well as what you're
+            going to start with. Regarldess of whether this is the first run,
+            give them any basic information they might need for selecting a {node_name}
+            first_run=={self.first_run}
             """
-            Introduce yourself to the user and tell them which part
-            of character creation we're working on.
-        """
         )
+        print(response.output.value)
+        return response
 
     def run(self, user_input: str):
         response = self.agent.run(user_input)
         if response.output.value == "change_node":
+            self.first_run = False
             character_sheet_updater = [
                 x for x in self.agent.tools if isinstance(x, CharacterSheetUpdater)
             ][0]
@@ -148,4 +163,5 @@ class Conversation:
 
             return self._start_node(self.current_node)
         else:
+            print(response.output.value)
             return response
