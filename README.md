@@ -15,6 +15,6 @@ To run the example notebook:
 
 ### Known limitations at the current state of development
 - Currently, only character creation is supported.
-- Within character creation, a linear conversation to select race, class, and assign ability scores is implemented.
-- A character sheet object persists across the entire conversation and is available to all agents, but no other memory persists across agents, and the AI will behave as though it's beginning an entirely new conversation.
+- Within character creation, a linear conversation to select race, class, assign ability scores, select a background, and then assign skill proficiencies is implemented.
+- A character sheet object persists across the entire conversation and is available to all agents, and some conversational memory is retained across agents and can be referred back to, but this complexity has greatly increased the size of API calls and introduced some rate limiting issues. Rate limit issues typically resolve on their own after enough retries.
 - No API or standalone app exists at this time, but there is a demo notebook.
