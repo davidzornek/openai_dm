@@ -1,6 +1,8 @@
 # AI Dungeon Master
 This project is an automated dungeon master for D&D 5e using OpenAI. Prompt engineering and conversational agent tooling is managed with griptape, which is similar to LangChain, but allows for DAG-based workflows. Conversation with the AI is modeled as a graph. Each node of the graph is a conversational agent dedicated to a specific conversational task that has its own termination criteria and instructions how to propagate to another accessible node.
 
+This is an early stage work in progress and is not optimized for production. In particular, the Agent tools will tend to hit the tight rate limits of OpenAI's API due tot he complexity of reasoning they implement.
+
 ### How to run the demo notebook
 Set up your API Key:
 - Visit https://platform.openai.com/account/api-keys to get an API Key.
