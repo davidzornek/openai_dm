@@ -1,6 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-llama-index/
-langhcain/
+llama_index/
+langchain/
 secrets.sh
 .ipynb_checkpoints/
 *.ipynb
