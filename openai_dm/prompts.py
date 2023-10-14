@@ -15,8 +15,7 @@ Observation: {"race": "wood elf", racial_bonuses={"dexterity": 2}
 Thought: The character sheet has been updated.
 Action: Finish["race"]""",
 ]
-SUFFIX = f"""\Input: {input}
-{agent_scratchpad}"""
+SUFFIX = f"""\Input: {input} | {agent_scratchpad}"""
 
 RACE_CHANGE_PROMPT_TEMPLATE = PromptTemplate.from_examples(
     EXAMPLES, SUFFIX, ["input", "agent_scratchpad"]
