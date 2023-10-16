@@ -4,10 +4,11 @@ from griptape.rules import Rule, Ruleset
 from griptape.drivers import OpenAiChatPromptDriver
 from griptape.memory.structure import ConversationMemory
 from griptape.memory.tool import BlobToolMemory
-from griptape.structures import Agent
 
+from openai_dm.dm_kit import DMAgent
 from openai_dm.character_sheet import Character
 from openai_dm.tools import CharacterSheetUpdater, CharacterSheetInspector
+from openai_dm.prompts import RACE_CHANGE_PROMPT_TEMPLATE
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
@@ -108,23 +109,15 @@ class Conversation:
             )
         )
 
-        self.agent = Agent(
+        self.agent = DMAgent(
+            character_sheet=self.character_sheet,
             rulesets=node_rules,
             logger_level=self.logger_level,
             prompt_driver=OpenAiChatPromptDriver(
-                model="gpt-4" if self.gpt4 else "gpt-3.5-turbo",
+                model="gpt-4" if self.gpt4 else "gpt-3.5-turbo-0613",
                 max_tokens=self.max_tokens,
             ),
             memory=self.memory,
-            tools=[
-                CharacterSheetUpdater(
-                    character_sheet=self.character_sheet,
-                ),
-                CharacterSheetInspector(
-                    character_sheet=self.character_sheet,
-                    output_memory={"query_character_sheet": [BlobToolMemory()]},
-                ),
-            ],
         )
         response = self.agent.run(
             f"""
