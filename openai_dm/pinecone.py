@@ -1,6 +1,5 @@
-import os
-
-import pinecone
+import itertools
+import torch
 
 
 def upload_embeddings_to_index(index, embeddings, batch_size=100):
@@ -16,7 +15,7 @@ def batch_generator(iterable, batch_size=100):
     """A helper function to break an iterable into chunks of size batch_size."""
     it = iter(iterable)
     batch = tuple(itertools.islice(it, batch_size))
-    while bach:
+    while batch:
         yield batch
         batch = tuple(itertools.islice(it, batch_size))
 
@@ -58,10 +57,10 @@ def create_embeddings(
             }
             with torch.no_grad():
                 try:
-                    model_output = model(**model_input)
+                    model_output = embedding_model(**model_input)
                 except IndexError:
                     print(id)
-                    error = model_input
+                    # error = model_input
                     start_idx = end_idx - overlap
                     end_idx = start_idx + max_length + 1
                     chunk_counter += 1
@@ -83,8 +82,8 @@ def create_embeddings(
                     "embedding_model": embedding_model,
                 },
             }
-            ebmedding_dict["metadata"].update(additional_metadata)
-            embeddings.append(ebmedding_dict)
+            embedding_dict["metadata"].update(additional_metadata)
+            embeddings.append(embedding_dict)
 
             start_idx = end_idx - overlap
             end_idx = start_idx + max_length + 1
