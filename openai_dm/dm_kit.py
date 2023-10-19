@@ -1,4 +1,4 @@
-from attr import field, Factory
+from attr import field, Factory, define
 from typing import Callable
 
 from griptape.memory.tool import BlobToolMemory
@@ -25,15 +25,15 @@ class DMAgent(Agent):
         self.add_task(DMToolkitTask(self.input_template, tools=self.tools))
 
 
+@define
 class DMToolkitTask(ToolkitTask):
-    def __attrs_post_init__(self):
-        generate_assistant_subtask_template: Callable[[ActionSubtask], str] = field(
-            default=Factory(
-                lambda self: self.default_assistant_subtask_template_generator,
-                takes_self=True,
-            ),
-            kw_only=True,
-        )
+    generate_assistant_subtask_template: Callable[[ActionSubtask], str] = field(
+        default=Factory(
+            lambda self: self.default_assistant_subtask_template_generator,
+            takes_self=True,
+        ),
+        kw_only=True,
+    )
 
     generate_user_subtask_template: Callable[[ActionSubtask], str] = field(
         default=Factory(
@@ -73,3 +73,9 @@ class DMToolkitTask(ToolkitTask):
                 for memory in memories
             ],
         )
+
+
+@define
+class OpenAIDMPromptDriver(OpenAiChatPromptDriver):
+    def try_run(self, **kwargs):
+        super().try_run(**kwargs)
