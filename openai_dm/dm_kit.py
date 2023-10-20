@@ -9,11 +9,10 @@ from griptape.structures import Agent
 from griptape.tasks import ToolkitTask, ActionSubtask, PromptTask
 from griptape.utils import minify_json, PromptStack
 from griptape.tools import BaseTool
-import openai
 
 from openai_dm.character_sheet import Character
 from openai_dm.tools import CharacterSheetInspector, CharacterSheetUpdater
-from openai_dm.utils import J2, abs_path
+from openai_dm.utils import J2
 
 
 @define

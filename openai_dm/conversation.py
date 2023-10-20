@@ -3,12 +3,10 @@ import logging
 from griptape.rules import Rule, Ruleset
 from griptape.drivers import OpenAiChatPromptDriver
 from griptape.memory.structure import ConversationMemory
-from griptape.memory.tool import BlobToolMemory
 
 from openai_dm.dm_kit import DMAgent
 from openai_dm.character_sheet import Character
-from openai_dm.tools import CharacterSheetUpdater, CharacterSheetInspector
-from openai_dm.prompts import RACE_CHANGE_PROMPT_TEMPLATE
+from openai_dm.tools import CharacterSheetUpdater
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
