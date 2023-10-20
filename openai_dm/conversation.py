@@ -7,6 +7,7 @@ from griptape.memory.structure import ConversationMemory
 from openai_dm.dm_kit import DMAgent
 from openai_dm.character_sheet import Character
 from openai_dm.tools import CharacterSheetUpdater
+from openai_dm.constants import NODE_RULES
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],

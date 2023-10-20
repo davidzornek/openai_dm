@@ -18,7 +18,7 @@ class RaceTool(BaseTool):
 
     @activity(
         config={
-            "description": "Updates the character's race",
+            "description": "Updates the character sheet with a race selection.",
             "schema": Schema(
                 {
                     Literal(
