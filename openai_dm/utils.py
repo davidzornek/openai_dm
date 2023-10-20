@@ -13,7 +13,7 @@ def abs_path(path: str) -> str:
 @define(frozen=True)
 class J2:
     template_name: Optional[str] = field(default=None)
-    templates_dir: str = field(default=abs_path(""), kw_only=True)
+    templates_dir: str = field(default=abs_path("openai_dm/templates"), kw_only=True)
     environment: Environment = field(
         default=Factory(
             lambda self: Environment(
