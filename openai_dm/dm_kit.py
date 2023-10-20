@@ -1,27 +1,29 @@
 from attr import field, Factory, define
-from typing import Callable
+from typing import Callable, List
 
-from griptape.memory.tool import BlobToolMemory
+from griptape.drivers import OpenAiChatPromptDriver
 from griptape.structures import Agent
 from griptape.tasks import ToolkitTask, ActionSubtask
-from griptape.utils import J2
+from griptape.utils import J2, minify_json
+from griptape.tools import BaseTool
 
+from openai_dm.character_sheet import Character
 from openai_dm.tools import CharacterSheetInspector, CharacterSheetUpdater
 
 
+@define
 class DMAgent(Agent):
-    def __init__(self, character_sheet):
-        super().__init__()
-        self.character_sheet = character_sheet
-        self.tools = [
-            CharacterSheetUpdater(
-                character_sheet=self.character_sheet,
-            ),
-            CharacterSheetInspector(
-                character_sheet=self.character_sheet,
-                output_memory={"query_character_sheet": [BlobToolMemory()]},
-            ),
-        ]
+    character_sheet: Character = field(default=Factory(lambda: Character()))
+    tools: List[BaseTool] = field(
+        default=Factory(
+            lambda self: [
+                CharacterSheetInspector(self.character_sheet),
+                CharacterSheetUpdater(self.character_sheet),
+            ]
+        )
+    )
+
+    def __attrs_post_init__(self) -> None:
         self.add_task(DMToolkitTask(self.input_template, tools=self.tools))
 
 
