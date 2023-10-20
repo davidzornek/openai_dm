@@ -16,31 +16,6 @@ CONVERSATION_GRAPH = {
     "skill_proficiencies": [],
 }
 
-NODE_RULES = {
-    "race": [],
-    "class_": [],
-    "ability_scores": [
-        """First, find out which method the user wants to use: standard array,
-        point buy, or roll for scores.""",
-        """Once you know the method, offer to optimize them for the user's class,
-        which you can obtain from their character sheet.""",
-        """If you optimize the ability scores, do not immediately update the
-        character sheet with new ability scores. Instead, ask their permission."""
-        """Update the character sheet with new ability scores after the user gives
-        permission to do so.""",
-    ],
-    "background": [
-        """Update the character sheet with a new background only after the
-        user gives permission to do so.""",
-    ],
-    "skill_proficiencies": [
-        """The player's class allows them to choose skill proficiencies from
-        a list specific to their class.""",
-        """You'll want to check which skill proficiencies they already have,
-        because there's no real reason to double up on them.""",
-    ],
-}
-
 
 class Conversation:
     def __init__(
