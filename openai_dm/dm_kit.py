@@ -18,8 +18,7 @@ from openai_dm.utils import J2
 class DMAgent(Agent):
     character_sheet: Character = field(default=Factory(lambda: Character()))
     tools: List[BaseTool] = field(default=Factory(list))
-    token_counts: List[int] = field(default=Factory(list))
-    prompt_history: List[PromptStack] = field(default=Factory(list))
+    prompt_history: List[dict] = field(default=Factory(list))
     prompt_driver: BasePromptDriver = field(
         default=Factory(lambda: OpenAiChatPromptDriver()), kw_only=True
     )
