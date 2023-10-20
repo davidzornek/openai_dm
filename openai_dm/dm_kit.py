@@ -1,6 +1,5 @@
 from attr import field, Factory, define
 import json
-import requests
 from typing import Callable, List
 
 from griptape.artifacts import TextArtifact
