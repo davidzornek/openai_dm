@@ -4,13 +4,17 @@ from typing import Callable, List
 
 from griptape.artifacts import TextArtifact
 from griptape.drivers import OpenAiChatPromptDriver, BasePromptDriver
+from griptape.rules import Ruleset, Rule
 from griptape.structures import Agent
 from griptape.tasks import ToolkitTask, ActionSubtask, PromptTask
 from griptape.utils import minify_json, PromptStack
 from griptape.tools import BaseTool
 
 from openai_dm.character_sheet import Character
-from openai_dm.tools import CharacterSheetInspector, CharacterSheetUpdater
+from openai_dm.constants import NODE_RULES
+
+# from openai_dm.tools import CharacterSheetInspector, CharacterSheetUpdater
+from openai_dm.tools import RaceTool
 from openai_dm.utils import J2
 
 
@@ -22,14 +26,22 @@ class DMAgent(Agent):
     prompt_driver: BasePromptDriver = field(
         default=Factory(lambda: OpenAiChatPromptDriver()), kw_only=True
     )
+    model: str = field(default="gpt-3.5-turbo-0613")
+    temperature: float = field(default=0)
+    node: str = field(default="race")
 
     def __attrs_post_init__(self) -> None:
-        self.prompt_driver = OpenAiDMPromptDriver(structure=self)
-
+        self.prompt_driver = OpenAiDMPromptDriver(
+            structure=self, model=self.model, temperature=self.temperature
+        )
+        self.rulesets = [
+            Ruleset(name=self.node, rules=[Rule(x) for x in NODE_RULES[self.node]])
+        ]
         if not self.tools:
             self.tools = [
-                CharacterSheetInspector(self.character_sheet),
-                CharacterSheetUpdater(self.character_sheet),
+                RaceTool(self)
+                # CharacterSh[eetInspector(self.character_sheet),
+                # CharacterSheetUpdater(self.character_sheet),
             ]
         self.add_task(DMToolkitTask(self.input_template, tools=self.tools))
 
@@ -71,6 +83,7 @@ class DMToolkitTask(ToolkitTask):
         return J2("react.j2").render(
             rulesets=self.all_rulesets,
             action_schema=action_schema,
+            node=self.structure.node,
             tool_names=str.join(", ", [tool.name for tool in self.tools]),
             tools=[J2("partials/_tool.j2").render(tool=tool) for tool in self.tools],
             memory_names=str.join(", ", [memory.name for memory in memories]),

@@ -12,3 +12,9 @@ COST_PER_1000_TOKENS = {
         "output": 0.06,
     },
 }
+
+NODE_RULES = {
+    "race": [
+        "After the player indicates their choice of race, update the character's race.",
+    ]
+}
