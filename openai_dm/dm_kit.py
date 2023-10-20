@@ -1,10 +1,12 @@
 from attr import field, Factory, define
+import json
 from typing import Callable, List
 
-from griptape.drivers import OpenAiChatPromptDriver
+from griptape.artifacts import TextArtifact
+from griptape.drivers import OpenAiChatPromptDriver, BasePromptDriver
 from griptape.structures import Agent
-from griptape.tasks import ToolkitTask, ActionSubtask
-from griptape.utils import J2, minify_json
+from griptape.tasks import ToolkitTask, ActionSubtask, PromptTask
+from griptape.utils import J2, minify_json, PromptStack
 from griptape.tools import BaseTool
 
 from openai_dm.character_sheet import Character
@@ -14,16 +16,19 @@ from openai_dm.tools import CharacterSheetInspector, CharacterSheetUpdater
 @define
 class DMAgent(Agent):
     character_sheet: Character = field(default=Factory(lambda: Character()))
-    tools: List[BaseTool] = field(
-        default=Factory(
-            lambda self: [
-                CharacterSheetInspector(self.character_sheet),
-                CharacterSheetUpdater(self.character_sheet),
-            ]
-        )
+    tools: List[BaseTool] = field(default=Factory(list))
+    prompt_driver: BasePromptDriver = field(
+        default=Factory(lambda: OpenAiChatPromptDriver()), kw_only=True
     )
 
     def __attrs_post_init__(self) -> None:
+        self.prompt_driver = OpenAiDMPromptDriver(structure=self)
+
+        if not self.tools:
+            self.tools = [
+                CharacterSheetInspector(self.character_sheet),
+                CharacterSheetUpdater(self.character_sheet),
+            ]
         self.add_task(DMToolkitTask(self.input_template, tools=self.tools))
 
 
@@ -78,6 +83,6 @@ class DMToolkitTask(ToolkitTask):
 
 
 @define
-class OpenAIDMPromptDriver(OpenAiChatPromptDriver):
-    def try_run(self, **kwargs):
-        super().try_run(**kwargs)
+class OpenAiDMPromptDriver(OpenAiChatPromptDriver):
+    def try_run(self, prompt_stack: PromptStack) -> TextArtifact:
+        super().try_run(prompt_stack)
