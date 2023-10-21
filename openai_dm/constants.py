@@ -19,9 +19,10 @@ NODE_RULES = {
     "race": [
         "After the player indicates their choice of race, update the character's race.",
     ],
-    "class": [],
+    "class_": [],
 }
 
 NODE_TOOLS = {
     "race": [RaceTool],
+    "class_": [],
 }

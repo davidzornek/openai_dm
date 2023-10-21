@@ -1,4 +1,6 @@
+from abc import ABC
 from attr import field, Factory, define
+from itertools import cycle
 import json
 from typing import Callable, List
 
@@ -29,6 +31,7 @@ class DMAgent(Agent):
     model: str = field(default="gpt-3.5-turbo-0613")
     temperature: float = field(default=0)
     node: str = field(default="race")
+    conversation: ABC = field(default=None)
 
     def __attrs_post_init__(self) -> None:
         self.prompt_driver = OpenAiDMPromptDriver(
