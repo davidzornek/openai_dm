@@ -1,3 +1,5 @@
+from openai_dm.tools import RaceTool
+
 COST_PER_1000_TOKENS = {
     "text-davinci-003": {
         "input": 0.002,
@@ -16,5 +18,10 @@ COST_PER_1000_TOKENS = {
 NODE_RULES = {
     "race": [
         "After the player indicates their choice of race, update the character's race.",
-    ]
+    ],
+    "class": [],
+}
+
+NODE_TOOLS = {
+    "race": [RaceTool],
 }

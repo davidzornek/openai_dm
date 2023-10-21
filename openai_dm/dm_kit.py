@@ -38,11 +38,9 @@ class DMAgent(Agent):
             Ruleset(name=self.node, rules=[Rule(x) for x in NODE_RULES[self.node]])
         ]
         if not self.tools:
-            self.tools = [
-                RaceTool(self)
-                # CharacterSh[eetInspector(self.character_sheet),
-                # CharacterSheetUpdater(self.character_sheet),
-            ]
+            self.tools = [RaceTool(self)]
+        else:
+            self.tools = [tool(structure=self) for tool in self.tools]
         self.add_task(DMToolkitTask(self.input_template, tools=self.tools))
 
 
