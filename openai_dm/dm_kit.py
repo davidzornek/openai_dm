@@ -1,3 +1,4 @@
+from abc import ABC
 from attr import field, Factory, define
 import json
 from typing import Callable, List
@@ -13,7 +14,6 @@ from griptape.tools import BaseTool
 from openai_dm.character_sheet import Character
 from openai_dm.constants import NODE_RULES
 
-# from openai_dm.tools import CharacterSheetInspector, CharacterSheetUpdater
 from openai_dm.tools import RaceTool
 from openai_dm.utils import J2
 
@@ -29,6 +29,7 @@ class DMAgent(Agent):
     model: str = field(default="gpt-3.5-turbo-0613")
     temperature: float = field(default=0)
     node: str = field(default="race")
+    conversation: ABC = field(default=None)
 
     def __attrs_post_init__(self) -> None:
         self.prompt_driver = OpenAiDMPromptDriver(

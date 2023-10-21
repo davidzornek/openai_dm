@@ -37,6 +37,11 @@ class RaceTool(BaseTool):
         }
     )
     def update_race(self, params: dict) -> TextArtifact:
+        if self.structure.conversation:
+            self.structure.conversation.state = (
+                self.structure.conversation.ConvStates.UPDATING_SHEET
+            )
+
         self.structure.character_sheet.race = params["values"]["race"].lower()
         racial_bonuses = params["values"]["racial_bonuses"]
 
@@ -53,4 +58,10 @@ class RaceTool(BaseTool):
 
         self.structure.character_sheet.racial_ability_bonus = racial_ability_bonus
         self.structure.character_sheet.apply_racial_ability_bonus()
+
+        if self.structure.conversation:
+            self.structure.conversation.state = (
+                self.structure.conversation.ConvStates.CHANGING_NODE
+            )
+
         return TextArtifact("The character sheet has been updated.")
