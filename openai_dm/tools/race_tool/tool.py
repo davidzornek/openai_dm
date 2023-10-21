@@ -4,11 +4,7 @@ from griptape.utils.decorators import activity
 from griptape.tools import BaseTool
 from schema import Schema, Literal
 
-from openai_dm.character_sheet import (
-    AbilityScores,
-)
-
-# from openai_dm.dm_kit import DMAgent
+from openai_dm.character_sheet import AbilityScores
 
 
 class RaceTool(BaseTool):
