@@ -1,7 +1,6 @@
 from abc import ABC
 from attr import define, field, Factory
 from enum import Enum
-from itertools import cycle
 import logging
 
 from griptape.memory.structure import ConversationMemory
@@ -30,14 +29,10 @@ class CharacterCreationConversation(ABC):
     character_sheet: Character = field(default=Factory(lambda: Character()))
     agent: DMAgent = field(default=None)
     memory: ConversationMemory = field(default=Factory(lambda: ConversationMemory()))
-    state_dict: cycle = field(
-        default=Factory(
-            lambda: cycle(["CONVERSING", "UPDATING_SHEET", "CHANGING_NODES"])
-        )
-    )
     state: str = field(default=None)
 
     def __attrs_post_init__(self):
+        self.state = CharacterCreationConversation.ConvStates.CONVERSING
         self.agent = DMAgent(
             character_sheet=self.character_sheet,
             tools=NODE_TOOLS[self.current_node],
@@ -65,6 +60,7 @@ class CharacterCreationConversation(ABC):
             else:
                 next_node = CONVERSATION_GRAPH[self.current_node][0]
                 self.current_node = next_node
+                self.state = CharacterCreationConversation.ConvStates.CONVERSING
                 self.agent = DMAgent(
                     character_sheet=self.character_sheet,
                     tools=NODE_TOOLS[self.current_node],
