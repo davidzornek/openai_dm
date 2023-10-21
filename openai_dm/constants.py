@@ -20,7 +20,7 @@ NODE_RULES = {
         "After the player indicates their choice of race, update the character's race.",
     ],
     "class_": [
-        "After the player indicates their choice of class, update the character's class.",
+        "After the player indicates their choice of class, use the appropriate tool to update their character sheet.",
     ],
 }
 

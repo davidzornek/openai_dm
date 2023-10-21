@@ -59,6 +59,7 @@ class CharacterCreationConversation(ABC):
                 return "All done!"
             else:
                 next_node = CONVERSATION_GRAPH[self.current_node][0]
+                last_node = self.current_node
                 self.current_node = next_node
                 self.state = CharacterCreationConversation.ConvStates.CONVERSING
                 self.agent = DMAgent(
@@ -70,8 +71,8 @@ class CharacterCreationConversation(ABC):
                     conversation=self,
                 )
                 response = self.agent.run(
-                    f"""You've just helped the user select a {self.current_node},
-                    and next you will help them select a {next_node}. Let the
+                    f"""You've just helped the user select a {last_node},
+                    and next you will help them select a {self.current_node}. Let the
                     user know that their choice has been logged to their character
                     sheet and tell them what's next.
                     """

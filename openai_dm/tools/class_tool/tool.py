@@ -59,12 +59,12 @@ class ClassTool(BaseTool):
                 self.structure.conversation.ConvStates.UPDATING_SHEET
             )
 
-        self.character_sheet.class_ = params["values"]["class"].lower()
-        self.character_sheet.hit_die = params["values"]["hit_die"]
-        self.character_sheet.armor_proficiencies.extend(
+        self.structure.character_sheet.class_ = params["values"]["class"].lower()
+        self.structure.character_sheet.hit_die = params["values"]["hit_die"]
+        self.structure.character_sheet.armor_proficiencies.extend(
             [x.lower() for x in params["values"]["armor_proficiencies"]]
         )
-        self.character_sheet.weapon_proficiencies.extend(
+        self.structure.character_sheet.weapon_proficiencies.extend(
             [x.lower() for x in params["values"]["weapon_proficiencies"]]
         )
         saving_throws = params["values"]["saving_throws"]
@@ -73,8 +73,10 @@ class ClassTool(BaseTool):
         for x in saving_throws:
             setattr(saving_throw_proficiences, x.lower(), True)
 
-        self.character_sheet.saving_throw_proficiencies = saving_throw_proficiences
-        self.character_sheet.update_max_hp()
+        self.structure.character_sheet.saving_throw_proficiencies = (
+            saving_throw_proficiences
+        )
+        self.structure.character_sheet.update_max_hp()
 
         if self.structure.conversation:
             self.structure.conversation.state = (
