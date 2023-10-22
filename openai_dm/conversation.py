@@ -11,8 +11,7 @@ from openai_dm.constants import NODE_TOOLS
 
 CONVERSATION_GRAPH = {
     "race": ["class_"],
-    "class_": [],
-    # "class_": ["ability_scores"],
+    "class_": ["ability_scores"],
     "ability_scores": ["background"],
     "background": ["skill_proficiencies"],
     "skill_proficiencies": [],
