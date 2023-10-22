@@ -1,3 +1,4 @@
+# flake8: noqa
 from openai_dm.tools import (
     AbilityScoreTool,
     BackgroundTool,
@@ -24,7 +25,7 @@ COST_PER_1000_TOKENS = {
 
 NODE_RULES = {
     "race": [
-        "After the player indicates their choice of race, use the appropriate tool to update their character sheet.",  # noqa: E501
+        "After the player indicates their choice of race, use the appropriate tool to update their character sheet.",
     ],
     "class_": [
         "After the player indicates their choice of class, use the appropriate tool to update their character sheet.",  # noqa: E501
