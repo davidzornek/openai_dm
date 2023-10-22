@@ -44,7 +44,8 @@ NODE_RULES = {
         1. Check which skill proficiences the player already has from their background.
         2. Check which skill proficiences the player's class allows them to choose from.
         3. Assist the player in choosing additional skill proficiencies they don't already have.
-        4. Update the character sheet with new skill proficiencies."""
+        4. Update the character sheet with new skill proficiencies.""",
+        "When listing options for the player, only include skill proficiencies offered by their character's class_",
     ],
 }
 
