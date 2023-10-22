@@ -1,4 +1,11 @@
-from openai_dm.tools import RaceTool, ClassTool, CharacterSheetInspector
+from openai_dm.tools import (
+    AbilityScoreTool,
+    BackgroundTool,
+    RaceTool,
+    ClassTool,
+    CharacterSheetInspector,
+    SkillProficiencydTool,
+)
 
 COST_PER_1000_TOKENS = {
     "text-davinci-003": {
@@ -44,4 +51,7 @@ NODE_RULES = {
 NODE_TOOLS = {
     "race": [RaceTool, CharacterSheetInspector],
     "class_": [ClassTool, CharacterSheetInspector],
+    "ability_scores": [AbilityScoreTool, CharacterSheetInspector],
+    "background": [BackgroundTool, CharacterSheetInspector],
+    "skill_proficiencies": [SkillProficiencydTool, CharacterSheetInspector],
 }
