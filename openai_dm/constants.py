@@ -22,6 +22,23 @@ NODE_RULES = {
     "class_": [
         "After the player indicates their choice of class, use the appropriate tool to update their character sheet.",  # noqa: E501
     ],
+    "ability_scores": [
+        """Do the following:
+        1. Find out which method the user wants for generating ability scores: standard array or point buy.
+        2. Offer to optimize the ability scores for the user's class, which can be obtained from the character sheet.
+        2a. If you optimize ability scores for the player, ask permission before updating the character sheet.
+        3. Use the appropriate tool to update the character sheet with the new ability scores."""
+    ],
+    "background": [
+        "After the player indicates their choice of background, use the appropriate tool to update their character sheet.",  # noqa: E501
+    ],
+    "skill_proficiencies": [
+        """Do the following;
+        1. Check which skill proficiences the player already has from their background.
+        2. Check which skill proficiences the player's class allows them to choose from.
+        3. Assist the player in choosing additional skill proficiencies they don't already have.
+        4. Update the character sheet with new skill proficiencies."""
+    ],
 }
 
 NODE_TOOLS = {
