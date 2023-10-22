@@ -1,0 +1,5 @@
+version: "v1"
+name: Skill Proficiency Update Tool
+description: Tool for updating the character sheet with new skill proficiencies.
+contact_email: david.zornek@gmail.com
+legal_info_url: https://www.griptape.ai/legal
