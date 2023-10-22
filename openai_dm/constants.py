@@ -1,4 +1,4 @@
-from openai_dm.tools import RaceTool, ClassTool
+from openai_dm.tools import RaceTool, ClassTool, CharacterSheetInspector
 
 COST_PER_1000_TOKENS = {
     "text-davinci-003": {
@@ -17,7 +17,7 @@ COST_PER_1000_TOKENS = {
 
 NODE_RULES = {
     "race": [
-        "After the player indicates their choice of race, update the character's race.",
+        "After the player indicates their choice of race, use the appropriate tool to update their character sheet.",  # noqa: E501
     ],
     "class_": [
         "After the player indicates their choice of class, use the appropriate tool to update their character sheet.",  # noqa: E501
@@ -25,6 +25,6 @@ NODE_RULES = {
 }
 
 NODE_TOOLS = {
-    "race": [RaceTool],
-    "class_": [ClassTool],
+    "race": [RaceTool, CharacterSheetInspector],
+    "class_": [ClassTool, CharacterSheetInspector],
 }
