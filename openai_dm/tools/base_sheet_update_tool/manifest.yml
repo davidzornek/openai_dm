@@ -1,5 +1,0 @@
-version: "v1"
-name: Base sheet update tool
-description: Parent class for tools that modify the character sheet and advance nodes.
-contact_email: david.zornek@gmail.com
-legal_info_url: https://www.griptape.ai/legal
