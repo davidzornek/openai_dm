@@ -1,21 +1,21 @@
+from attrs import define, Factory, field
+
 from griptape.structures import Agent
-from griptape.artifacts import TextArtifact
-from griptape.utils.decorators import activity
-from griptape.tools import BaseTool
 from schema import Schema, Literal
 
 from openai_dm.character_sheet import SkillProficiencies
+from openai_dm.tools import BaseSheetUpdateTool
 
 
-class BackgroundTool(BaseTool):
-    def __init__(self, structure: Agent, **kwargs):
-        super().__init__(**kwargs)
-        self.structure = structure
-
-    @activity(
-        config={
-            "description": "Updates the character sheet with a background selection.",
-            "schema": Schema(
+@define
+class BackgroundTool(BaseSheetUpdateTool):
+    structure: Agent
+    description: str = field(
+        default="Updates the character sheet with a background selection."
+    )
+    schema: Schema = field(
+        Factory(
+            lambda: Schema(
                 {
                     Literal(
                         "background",
@@ -26,15 +26,11 @@ class BackgroundTool(BaseTool):
                         description=f"Skill proficiences provided by the background.Must be a subset of {list(SkillProficiencies.__dataclass_fields__.keys())}",  # noqa: E501
                     ): list,
                 }
-            ),
-        }
-    )
-    def update_background(self, params: dict) -> TextArtifact:
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.UPDATING_SHEET
             )
+        )
+    )
 
+    def _execute_update(self, params: dict):
         self.structure.character_sheet.background = params["values"]["background"]
         skill_proficiencies = params["values"]["skill_proficiencies"]
 
@@ -44,10 +40,3 @@ class BackgroundTool(BaseTool):
                 x.lower().replace(" ", "_"),
                 True,
             )
-
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.CHANGING_NODE
-            )
-
-        return TextArtifact("The character sheet has been updated.")

@@ -1,21 +1,21 @@
+from attrs import define, Factory, field
+
 from griptape.structures import Agent
-from griptape.artifacts import TextArtifact
-from griptape.utils.decorators import activity
-from griptape.tools import BaseTool
 from schema import Schema, Literal
 
 from openai_dm.character_sheet import SavingThrowProficiencies
+from openai_dm.tools import BaseSheetUpdateTool
 
 
-class ClassTool(BaseTool):
-    def __init__(self, structure: Agent, **kwargs):
-        super().__init__(**kwargs)
-        self.structure = structure
-
-    @activity(
-        config={
-            "description": "Updates the character sheet with a class selection.",
-            "schema": Schema(
+@define
+class ClassTool(BaseSheetUpdateTool):
+    structure: Agent
+    description: str = field(
+        default="Updates the character sheet with a class selection."
+    )
+    schema: Schema = field(
+        default=Factory(
+            lambda: Schema(
                 {
                     Literal(
                         "class",
@@ -24,10 +24,10 @@ class ClassTool(BaseTool):
                     Literal(
                         "saving_throws",
                         description="""
-                        A list of saving throw proficiences.
-                        Example: Cleric
-                        ['wisdom', 'charisma']
-                        """,
+                    A list of saving throw proficiences.
+                    Example: Cleric
+                    ['wisdom', 'charisma']
+                    """,
                     ): list,
                     Literal(
                         "hit_die",
@@ -36,29 +36,25 @@ class ClassTool(BaseTool):
                     Literal(
                         "armor_proficiencies",
                         description="""
-                        A list of armor proficiencies for the chosen class.
-                        Example: Ranger
-                        ['light armor', 'medium armor', 'shields']
-                        """,
+                    A list of armor proficiencies for the chosen class.
+                    Example: Ranger
+                    ['light armor', 'medium armor', 'shields']
+                    """,
                     ): list,
                     Literal(
                         "weapon_proficiencies",
                         description="""
-                        A list of armor proficiencies for the chosen class.
-                        Example: Warlock
-                        ['simple weapons']
-                        """,
+                    A list of armor proficiencies for the chosen class.
+                    Example: Warlock
+                    ['simple weapons']
+                    """,
                     ): list,
                 }
-            ),
-        }
-    )
-    def update_class(self, params: dict) -> TextArtifact:
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.UPDATING_SHEET
             )
+        )
+    )
 
+    def _execute_update(self, params: dict):
         self.structure.character_sheet.class_ = params["values"]["class"].lower()
         self.structure.character_sheet.hit_die = params["values"]["hit_die"]
         self.structure.character_sheet.armor_proficiencies.extend(
@@ -77,10 +73,3 @@ class ClassTool(BaseTool):
             saving_throw_proficiences
         )
         self.structure.character_sheet.update_max_hp()
-
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.CHANGING_NODE
-            )
-
-        return TextArtifact("The character sheet has been updated.")
