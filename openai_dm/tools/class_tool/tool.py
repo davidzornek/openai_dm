@@ -1,7 +1,9 @@
-from attrs import define, Factory, field
-
-from griptape.structures import Agent
+from attrs import define
 from schema import Schema, Literal
+
+from griptape.artifacts import TextArtifact
+from griptape.utils.decorators import activity
+from griptape.structures import Agent
 
 from openai_dm.character_sheet import SavingThrowProficiencies
 from openai_dm.tools import BaseSheetUpdateTool
@@ -16,6 +18,10 @@ class ClassTool(BaseSheetUpdateTool):
             "description": "Updates the character sheet with a class selection.",
             "schema": Schema(
                 {
+                    Literal(
+                        "class",
+                        description="The class chosen by the player",
+                    ): str,
                     Literal(
                         "class",
                         description="The class chosen by the player",

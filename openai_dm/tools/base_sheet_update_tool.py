@@ -5,7 +5,7 @@ from griptape.structures import Agent
 from griptape.artifacts import TextArtifact
 from griptape.utils.decorators import activity
 from griptape.tools import BaseTool
-from schema import Schema
+from schema import Schema, Literal
 
 
 @define
@@ -14,7 +14,17 @@ class BaseSheetUpdateTool(BaseTool):
     output_text: str = field(default="The character sheet has been updated.")
 
     @activity(
-        config={"description": "This is a default description", "schema": Schema()}
+        config={
+            "description": "This is a default description",
+            "schema": Schema(
+                {
+                    Literal(
+                        "placholder arg",
+                        description="Just a placeholder for the base class. Will be overwritten in subclasses.",
+                    ): str,
+                }
+            ),
+        }
     )
     @abstractmethod
     # The method itself should stay the same when defined in subclasses.
