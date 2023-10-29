@@ -10,14 +10,11 @@ from openai_dm.tools import BaseSheetUpdateTool
 @define(kw_only=True)
 class SkillProficiencydTool(BaseSheetUpdateTool):
     structure: Agent
-    description: str = (
-        field(
-            default="Updates the character sheet with a skill porficiency selection."
-        ),
-    )
-    schema: Schema = field(
-        default=Factory(
-            lambda: Schema(
+
+    @activity(
+        config={
+            "description": "Updates the character sheet with a skill porficiency selection.",
+            "schema": Schema(
                 {
                     Literal(
                         "skill_proficiencies",
@@ -25,8 +22,10 @@ class SkillProficiencydTool(BaseSheetUpdateTool):
                     ): list,
                 }
             ),
-        )
+        }
     )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        super().update_sheet(params)
 
     def _execute_update(self, params: dict):
         skill_proficiencies = params["values"]["skill_proficiencies"]
