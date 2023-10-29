@@ -20,7 +20,7 @@ class BaseSheetUpdateTool(BaseTool):
                 {
                     Literal(
                         "placholder arg",
-                        description="Just a placeholder for the base class. Will be overwritten in subclasses.",
+                        description="Just a placeholder for the base class. Will be overwritten in subclasses.",  # noqa: E501
                     ): str,
                 }
             ),
