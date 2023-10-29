@@ -1,16 +1,17 @@
-from griptape.structures import Agent
-from griptape.artifacts import TextArtifact
-from griptape.utils.decorators import activity
-from griptape.tools import BaseTool
+from attrs import define
 from schema import Schema, Literal
 
+from griptape.artifacts import TextArtifact
+from griptape.utils.decorators import activity
+from griptape.structures import Agent
+
 from openai_dm.character_sheet import SkillProficiencies
+from openai_dm.tools import BaseSheetUpdateTool
 
 
-class BackgroundTool(BaseTool):
-    def __init__(self, structure: Agent, **kwargs):
-        super().__init__(**kwargs)
-        self.structure = structure
+@define(kw_only=True)
+class BackgroundTool(BaseSheetUpdateTool):
+    structure: Agent
 
     @activity(
         config={
@@ -29,12 +30,13 @@ class BackgroundTool(BaseTool):
             ),
         }
     )
-    def update_background(self, params: dict) -> TextArtifact:
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.UPDATING_SHEET
-            )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        self._before_update()
+        self._execute_update(params)
+        self._after_update()
+        return TextArtifact(self.output_text)
 
+    def _execute_update(self, params: dict):
         self.structure.character_sheet.background = params["values"]["background"]
         skill_proficiencies = params["values"]["skill_proficiencies"]
 
@@ -44,10 +46,3 @@ class BackgroundTool(BaseTool):
                 x.lower().replace(" ", "_"),
                 True,
             )
-
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.CHANGING_NODE
-            )
-
-        return TextArtifact("The character sheet has been updated.")

@@ -1,16 +1,17 @@
-from griptape.structures import Agent
-from griptape.artifacts import TextArtifact
-from griptape.utils.decorators import activity
-from griptape.tools import BaseTool
+from attrs import define
 from schema import Schema, Literal
 
+from griptape.artifacts import TextArtifact
+from griptape.structures import Agent
+from griptape.utils.decorators import activity
+
 from openai_dm.character_sheet import AbilityScores
+from openai_dm.tools import BaseSheetUpdateTool
 
 
-class RaceTool(BaseTool):
-    def __init__(self, structure: Agent, **kwargs):
-        super().__init__(**kwargs)
-        self.structure = structure
+@define(kw_only=True)
+class RaceTool(BaseSheetUpdateTool):
+    structure: Agent
 
     @activity(
         config={
@@ -32,12 +33,13 @@ class RaceTool(BaseTool):
             ),
         }
     )
-    def update_race(self, params: dict) -> TextArtifact:
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.UPDATING_SHEET
-            )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        self._before_update()
+        self._execute_update(params)
+        self._after_update()
+        return TextArtifact(self.output_text)
 
+    def _execute_update(self, params: dict):
         self.structure.character_sheet.race = params["values"]["race"].lower()
         racial_bonuses = params["values"]["racial_bonuses"]
 
@@ -54,10 +56,3 @@ class RaceTool(BaseTool):
 
         self.structure.character_sheet.racial_ability_bonus = racial_ability_bonus
         self.structure.character_sheet.apply_racial_ability_bonus()
-
-        if self.structure.conversation:
-            self.structure.conversation.state = (
-                self.structure.conversation.ConvStates.CHANGING_NODE
-            )
-
-        return TextArtifact("The character sheet has been updated.")

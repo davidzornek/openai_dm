@@ -1,3 +1,4 @@
+from .base_sheet_update_tool import BaseSheetUpdateTool
 from .ability_score_tool.tool import AbilityScoreTool
 from .background_tool.tool import BackgroundTool
 from .character_sheet_inspector.tool import CharacterSheetInspector
@@ -8,6 +9,7 @@ from .skill_proficiencies_tool.tool import SkillProficiencydTool
 __all__ = [
     "AbilityScoreTool",
     "BackgroundTool",
+    "BaseSheetUpdateTool",
     "CharacterSheetInspector",
     "ClassTool",
     "RaceTool",
