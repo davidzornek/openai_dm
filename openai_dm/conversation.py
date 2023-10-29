@@ -21,7 +21,7 @@ CONVERSATION_GRAPH = {
 @define
 class CharacterCreationConversation(ABC):
     name: str = field(default="AI Dungeon Master")
-    gpt4: bool = field(default=True)
+    gpt4: bool = field(default=False)
     max_tokens: int = field(default=500)
     logger_level: int = field(default=logging.INFO)
     current_node: str = field(default="race")
@@ -35,6 +35,7 @@ class CharacterCreationConversation(ABC):
         self.agent = DMAgent(
             character_sheet=self.character_sheet,
             tools=NODE_TOOLS[self.current_node],
+            model="gpt-4" if self.gpt4 else "gpt-3.5-turbo-0613",
             node=self.current_node,
             memory=self.memory,
             logger_level=self.logger_level,
@@ -64,6 +65,7 @@ class CharacterCreationConversation(ABC):
                 self.agent = DMAgent(
                     character_sheet=self.character_sheet,
                     tools=NODE_TOOLS[self.current_node],
+                    model="gpt-4" if self.gpt4 else "gpt-3.5-turbo-0613",
                     node=self.current_node,
                     memory=self.memory,
                     logger_level=self.logger_level,
