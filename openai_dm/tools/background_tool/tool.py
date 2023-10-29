@@ -10,12 +10,11 @@ from openai_dm.tools import BaseSheetUpdateTool
 @define(kw_only=True)
 class BackgroundTool(BaseSheetUpdateTool):
     structure: Agent
-    description: str = field(
-        default="Updates the character sheet with a background selection."
-    )
-    schema: Schema = field(
-        default=Factory(
-            lambda: Schema(
+
+    @activity(
+        config={
+            "description": "Updates the character sheet with a background selection.",
+            "schema": Schema(
                 {
                     Literal(
                         "background",
@@ -26,9 +25,11 @@ class BackgroundTool(BaseSheetUpdateTool):
                         description=f"Skill proficiences provided by the background.Must be a subset of {list(SkillProficiencies.__dataclass_fields__.keys())}",  # noqa: E501
                     ): list,
                 }
-            )
-        )
+            ),
+        }
     )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        super().update_sheet(params)
 
     def _execute_update(self, params: dict):
         self.structure.character_sheet.background = params["values"]["background"]
