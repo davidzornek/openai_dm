@@ -34,7 +34,10 @@ class RaceTool(BaseSheetUpdateTool):
         }
     )
     def update_sheet(self, params: dict) -> TextArtifact:
-        super().update_sheet(params)
+        self._before_update()
+        self._execute_update(params)
+        self._after_update()
+        return TextArtifact(self.output_text)
 
     def _execute_update(self, params: dict):
         self.structure.character_sheet.race = params["values"]["race"].lower()
