@@ -1,30 +1,34 @@
-from attrs import define, field, Factory
+from attrs import define
 
 from griptape.structures import Agent
 from schema import Schema, Literal
+
+from griptape.artifacts import TextArtifact
+from griptape.utils.decorators import activity
 
 from openai_dm.character_sheet import AbilityScores
 from openai_dm.tools import BaseSheetUpdateTool
 
 
-@define
+@define(kw_only=True)
 class AbilityScoreTool(BaseSheetUpdateTool):
     structure: Agent
-    description: str = field(
-        default="Updates the character sheet with an ability score distribution."
-    )
-    schema: Schema = field(
-        default=Factory(
-            lambda: Schema(
+
+    @activity(
+        config={
+            "description": "Updates the character sheet with an ability score distribution.",
+            "schema": Schema(
                 {
                     Literal(
                         "ability_scores",
                         description=f"A json of ability scores. Keys are: {list(AbilityScores.__dataclass_fields__.keys())}",  # noqa: E501
                     ): dict,
                 }
-            )
-        )
+            ),
+        }
     )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        super().update_sheet(params)
 
     def _execute_update(self, params: dict):
         ability_scores = params["values"]["ability_scores"].items()

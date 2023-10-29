@@ -11,15 +11,15 @@ from schema import Schema
 @define
 class BaseSheetUpdateTool(BaseTool):
     structure: Agent
-    description: str
-    schema: Schema
     output_text: str = field(default="The character sheet has been updated.")
 
-    def __attrs_post_init__(self):
-        self.update_sheet = activity(
-            config={"description": self.description, "schema": self.schema}
-        )(self.update_sheet)
-
+    @activity(
+        config={"description": "This is a default description", "schema": Schema()}
+    )
+    @abstractmethod
+    # The method itself should stay the same when defined in subclasses.
+    # This is made into an abstractmethod mostly to force writing
+    # the activity decorator when it's subclassed.
     def update_sheet(self, params: dict) -> TextArtifact:
         self._before_update()
         self._execute_update(params)

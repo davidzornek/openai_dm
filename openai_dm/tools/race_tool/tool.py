@@ -7,31 +7,29 @@ from openai_dm.character_sheet import AbilityScores
 from openai_dm.tools import BaseSheetUpdateTool
 
 
-@define
+@define(kw_only=True)
 class RaceTool(BaseSheetUpdateTool):
     structure: Agent
-    activity_config: dict = field(
-        Factory(
-            lambda: {
-                "description": "Updates the character sheet with a race selection.",
-                "schema": Schema(
-                    {
-                        Literal(
-                            "racial_bonuses",
-                            description="""
-                        A json of racial ability score bonuses.
-                        Example 1: Halfling
-                        {"dexterity": 2}
-                        Example 2: Tiefling
-                        {"intelligence": 1, "charisma": 2}
-                        """,
-                        ): dict,
-                        Literal(
-                            "race", description="The race chosen by the player"
-                        ): str,
-                    }
-                ),
-            }
+    description: str = field(
+        default="Updates the character sheet with a race selection."
+    )
+    schema: Schema = field(
+        default=Factory(
+            lambda: Schema(
+                {
+                    Literal(
+                        "racial_bonuses",
+                        description="""
+                    A json of racial ability score bonuses.
+                    Example 1: Halfling
+                    {"dexterity": 2}
+                    Example 2: Tiefling
+                    {"intelligence": 1, "charisma": 2}
+                    """,
+                    ): dict,
+                    Literal("race", description="The race chosen by the player"): str,
+                }
+            ),
         )
     )
 

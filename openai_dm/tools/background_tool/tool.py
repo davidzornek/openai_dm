@@ -7,14 +7,14 @@ from openai_dm.character_sheet import SkillProficiencies
 from openai_dm.tools import BaseSheetUpdateTool
 
 
-@define
+@define(kw_only=True)
 class BackgroundTool(BaseSheetUpdateTool):
     structure: Agent
     description: str = field(
         default="Updates the character sheet with a background selection."
     )
     schema: Schema = field(
-        Factory(
+        default=Factory(
             lambda: Schema(
                 {
                     Literal(

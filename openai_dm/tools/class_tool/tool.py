@@ -7,7 +7,7 @@ from openai_dm.character_sheet import SavingThrowProficiencies
 from openai_dm.tools import BaseSheetUpdateTool
 
 
-@define
+@define(kw_only=True)
 class ClassTool(BaseSheetUpdateTool):
     structure: Agent
     description: str = field(
