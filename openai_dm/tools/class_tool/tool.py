@@ -10,12 +10,11 @@ from openai_dm.tools import BaseSheetUpdateTool
 @define(kw_only=True)
 class ClassTool(BaseSheetUpdateTool):
     structure: Agent
-    description: str = field(
-        default="Updates the character sheet with a class selection."
-    )
-    schema: Schema = field(
-        default=Factory(
-            lambda: Schema(
+
+    @activity(
+        config={
+            "description": "Updates the character sheet with a class selection.",
+            "schema": Schema(
                 {
                     Literal(
                         "class",
@@ -50,9 +49,11 @@ class ClassTool(BaseSheetUpdateTool):
                     """,
                     ): list,
                 }
-            )
-        )
+            ),
+        }
     )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        super().update_sheet(params)
 
     def _execute_update(self, params: dict):
         self.structure.character_sheet.class_ = params["values"]["class"].lower()
