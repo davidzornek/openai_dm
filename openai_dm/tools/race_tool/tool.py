@@ -10,28 +10,29 @@ from openai_dm.tools import BaseSheetUpdateTool
 @define(kw_only=True)
 class RaceTool(BaseSheetUpdateTool):
     structure: Agent
-    description: str = field(
-        default="Updates the character sheet with a race selection."
-    )
-    schema: Schema = field(
-        default=Factory(
-            lambda: Schema(
+
+    @activity(
+        config={
+            "description": "Updates the character sheet with a race selection.",
+            "schema": Schema(
                 {
                     Literal(
                         "racial_bonuses",
                         description="""
-                    A json of racial ability score bonuses.
-                    Example 1: Halfling
-                    {"dexterity": 2}
-                    Example 2: Tiefling
-                    {"intelligence": 1, "charisma": 2}
-                    """,
+                        A json of racial ability score bonuses.
+                        Example 1: Halfling
+                        {"dexterity": 2}
+                        Example 2: Tiefling
+                        {"intelligence": 1, "charisma": 2}
+                        """,
                     ): dict,
                     Literal("race", description="The race chosen by the player"): str,
                 }
             ),
-        )
+        }
     )
+    def update_sheet(self, params: dict) -> TextArtifact:
+        super().update_sheet(params)
 
     def _execute_update(self, params: dict):
         self.structure.character_sheet.race = params["values"]["race"].lower()
