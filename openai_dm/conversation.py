@@ -37,7 +37,7 @@ class CharacterCreationConversation(ABC):
             tools=NODE_TOOLS[self.current_node],
             model="gpt-4" if self.gpt4 else "gpt-3.5-turbo-0613",
             node=self.current_node,
-            memory=self.memory,
+            # memory=self.memory,
             logger_level=self.logger_level,
             conversation=self,
         )
@@ -67,7 +67,7 @@ class CharacterCreationConversation(ABC):
                     tools=NODE_TOOLS[self.current_node],
                     model="gpt-4" if self.gpt4 else "gpt-3.5-turbo-0613",
                     node=self.current_node,
-                    memory=self.memory,
+                    # memory=self.memory,
                     logger_level=self.logger_level,
                     conversation=self,
                 )
